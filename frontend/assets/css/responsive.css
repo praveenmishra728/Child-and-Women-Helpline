@@ -1,0 +1,182 @@
+/**
+ * responsive.css
+ * Media queries for Tablet and Mobile breakpoints.
+ * Mobile-first approach using max-width breakpoints.
+ */
+
+/* ─── Breakpoints ────────────────────────────────────────────────
+   lg: 1024px  (Laptop / Small desktop)
+   md: 768px   (Tablet)
+   sm: 480px   (Mobile)
+──────────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════
+   LAPTOP / SMALL DESKTOP (≤ 1024px)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  :root { --sidebar-width: 220px; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .stats-bar-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-visual { display: none; }
+  .hero-content { max-width: 100%; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .chat-layout { grid-template-columns: 260px 1fr; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLET (≤ 768px)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Typography */
+  h1 { font-size: var(--font-size-3xl); }
+  h2 { font-size: var(--font-size-2xl); }
+
+  /* Navigation — hide desktop nav, show hamburger */
+  .navbar-nav { display: none; }
+  .hamburger  { display: flex; }
+
+  /* Mobile nav menu */
+  .mobile-nav {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0; right: 0;
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-4);
+    flex-direction: column;
+    gap: var(--space-1);
+    z-index: calc(var(--z-navbar) - 1);
+    display: none;
+    box-shadow: var(--shadow-lg);
+  }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav .nav-link { width: 100%; padding: var(--space-3) var(--space-4); }
+
+  /* Dashboard layout — collapse sidebar */
+  .dashboard-layout { flex-direction: column; }
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0; bottom: 0;
+    z-index: var(--z-sidebar);
+    transition: left var(--transition-base);
+    box-shadow: var(--shadow-xl);
+    width: 260px;
+    height: 100vh;
+  }
+  .sidebar.open { left: 0; }
+  .sidebar-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: calc(var(--z-sidebar) - 1);
+    display: none;
+  }
+  .sidebar-overlay.open { display: block; }
+  .main-content { padding: var(--space-5); }
+
+  /* Grids */
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .form-row, .form-row.three { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Hero */
+  .hero { padding: var(--space-16) 0 var(--space-12); min-height: auto; }
+  .hero h1 { font-size: var(--font-size-3xl); }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .btn { width: 100%; }
+
+  /* Auth card */
+  .auth-card { padding: var(--space-8) var(--space-6); }
+
+  /* Welcome card */
+  .welcome-card::after { display: none; }
+
+  /* AI Chat */
+  .chat-layout { grid-template-columns: 1fr; }
+  .chat-sidebar-panel { display: none; }
+  .chat-sidebar-panel.open { display: flex; position: fixed; inset: 0; top: var(--navbar-height); z-index: var(--z-modal); border-radius: 0; }
+
+  /* Admin layout */
+  .admin-layout { flex-direction: column; }
+  .admin-sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: var(--space-4);
+    display: none;
+  }
+  .admin-sidebar.open { display: flex; }
+  .admin-page-body { padding: var(--space-5); }
+
+  /* Footer */
+  .footer-grid { grid-template-columns: 1fr; gap: var(--space-8); }
+  .footer-bottom { flex-direction: column; gap: var(--space-4); text-align: center; }
+  .footer-helplines { justify-content: center; }
+
+  /* Tables */
+  .table-wrapper { font-size: var(--font-size-sm); }
+  th, td { padding: var(--space-3); }
+
+  /* Stats bar */
+  .stats-bar-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Emergency numbers */
+  .emergency-numbers { grid-template-columns: 1fr 1fr; }
+
+  /* Charts */
+  .charts-grid { grid-template-columns: 1fr; }
+
+  /* Profile */
+  .profile-header { flex-direction: column; text-align: center; }
+
+  /* Toast */
+  .toast-container { top: auto; bottom: var(--space-6); left: var(--space-4); right: var(--space-4); }
+  .toast { min-width: unset; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MOBILE (≤ 480px)
+═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .container { padding: 0 var(--space-4); }
+  .section { padding: var(--space-10) 0; }
+
+  .navbar { padding: 0 var(--space-4); }
+  .navbar-name { display: none; }
+
+  .hero h1 { font-size: 1.8rem; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .stats-bar-grid { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .emergency-numbers { grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  .emergency-number  { font-size: var(--font-size-2xl); }
+
+  .otp-inputs { gap: var(--space-2); }
+  .otp-input  { width: 44px; height: 54px; font-size: var(--font-size-xl); }
+
+  .card { padding: var(--space-4); }
+  .welcome-card { padding: var(--space-6); }
+
+  .ai-helplines { grid-template-columns: 1fr 1fr; }
+  .quick-actions-grid { grid-template-columns: 1fr 1fr; }
+
+  .form-actions-sticky { padding: var(--space-4); }
+  .form-actions-sticky .btn { flex: 1; }
+
+  .page-title    { font-size: var(--font-size-xl); }
+  .page-subtitle { margin-bottom: var(--space-5); }
+
+  .modal { border-radius: var(--radius-xl); }
+  .modal-body { padding: var(--space-4); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PRINT STYLES
+═══════════════════════════════════════════════════════════════ */
+@media print {
+  .navbar, .sidebar, .footer, .btn, .toast-container, .modal-overlay { display: none !important; }
+  .main-content { padding: 0; }
+  .card { box-shadow: none; border: 1px solid #ccc; }
+}

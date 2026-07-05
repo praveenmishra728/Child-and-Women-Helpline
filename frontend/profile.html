@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+<nav class="navbar" role="navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm"><i class="ph-bold ph-phone"></i> SOS</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+  <aside class="sidebar" id="sidebar" role="navigation">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div><div class="sidebar-logo-text">SurakshaAI</div><div class="sidebar-logo-sub">Safety Portal</div></div>
+    </div>
+    <div class="sidebar-section">
+      <a href="dashboard.html"   class="sidebar-link"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"      class="sidebar-link"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"  class="sidebar-link"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="profile.html"     class="sidebar-link active"><i class="ph ph-user-circle"></i>Profile</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos"><i class="ph-bold ph-phone-call"></i>Emergency SOS</a>
+    </div>
+  </aside>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb"><a href="dashboard.html">Dashboard</a><span class="sep">›</span><span class="current">Profile</span></nav>
+
+    <!-- Profile header -->
+    <div class="profile-header" aria-label="Profile header">
+      <div class="profile-avatar-large" id="avatar-trigger" role="button" tabindex="0" aria-label="Change avatar">
+        <span id="profile-avatar-initials" aria-hidden="true">U</span>
+        <div class="change-overlay"><i class="ph ph-camera" aria-hidden="true"></i></div>
+        <input type="file" id="avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none" aria-label="Upload avatar" />
+      </div>
+      <div>
+        <h1 style="color:white;font-size:var(--font-size-2xl);margin-bottom:var(--space-1)" id="profile-name">Loading…</h1>
+        <p style="color:rgba(255,255,255,0.75);font-size:var(--font-size-sm)" id="profile-email">—</p>
+        <div style="margin-top:var(--space-3);display:flex;gap:var(--space-2);flex-wrap:wrap">
+          <span class="badge badge-gray" id="profile-role">—</span>
+          <span class="badge badge-gray" id="profile-joined">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 gap-6 mt-6">
+      <!-- Edit Profile Form -->
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">Edit Profile</h3></div>
+        <form id="profile-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="full_name">Full Name <span class="required">*</span></label>
+            <input type="text" class="form-control" id="full_name" name="full_name" maxlength="100" required />
+          </div>
+          <div class="form-group mt-4">
+            <label class="form-label" for="email-display">Email</label>
+            <input type="text" class="form-control" id="email-display" disabled style="background:var(--color-gray-100)" />
+            <div class="form-hint">Email cannot be changed.</div>
+          </div>
+          <div class="form-group mt-4">
+            <label class="form-label" for="phone">Phone Number</label>
+            <div class="input-wrapper">
+              <i class="ph ph-phone input-icon"></i>
+              <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 98765 43210" maxlength="15" />
+            </div>
+          </div>
+          <div class="form-group mt-4">
+            <label class="form-label" for="gender">Gender</label>
+            <select class="form-control" id="gender" name="gender">
+              <option value="">Prefer not to say</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group mt-4">
+            <label class="form-label" for="dob">Date of Birth</label>
+            <input type="date" class="form-control" id="dob" name="date_of_birth" />
+          </div>
+          <button type="submit" class="btn btn-primary mt-6" id="save-profile-btn">
+            <i class="ph-bold ph-floppy-disk"></i><span class="btn-text"> Save Changes</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Account Security & Danger Zone -->
+      <div style="display:flex;flex-direction:column;gap:var(--space-5)">
+        <!-- Emergency Contacts -->
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Emergency Contacts</h3></div>
+          <div id="emergency-contacts-list" class="text-muted text-sm">Loading…</div>
+          <button class="btn btn-outline btn-sm mt-4" id="add-contact-btn"><i class="ph ph-plus"></i> Add Contact</button>
+        </div>
+        <!-- Security -->
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Account Security</h3></div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:var(--space-3)">
+            <li style="display:flex;align-items:center;gap:var(--space-3)">
+              <i class="ph ph-check-circle" style="color:var(--color-success);font-size:1.2rem" aria-hidden="true"></i>
+              <div><div class="font-semibold text-sm">OTP Authentication Active</div><div class="text-xs text-muted">Passwordless — email OTP</div></div>
+            </li>
+            <li style="display:flex;align-items:center;gap:var(--space-3)">
+              <i class="ph ph-shield-check" style="color:var(--color-success);font-size:1.2rem" aria-hidden="true"></i>
+              <div><div class="font-semibold text-sm">Data Encrypted</div><div class="text-xs text-muted">All data is AES-256 encrypted</div></div>
+            </li>
+            <li style="display:flex;align-items:center;gap:var(--space-3)">
+              <i class="ph ph-devices" style="color:var(--color-primary);font-size:1.2rem" aria-hidden="true"></i>
+              <div>
+                <div class="font-semibold text-sm">Active Sessions</div>
+                <div class="text-xs text-muted">Up to 3 devices allowed</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="logout-all-btn" style="margin-left:auto" title="Logout from all devices">Logout All</button>
+            </li>
+          </ul>
+        </div>
+        <!-- Danger zone -->
+        <div class="card" style="border:1px solid rgba(220,38,38,0.25)">
+          <h4 style="color:var(--color-danger);margin-bottom:var(--space-4)"><i class="ph ph-warning-circle" aria-hidden="true"></i> Danger Zone</h4>
+          <p class="text-sm text-muted mb-4">Deleting your account permanently removes all your data, reports, and AI conversations. This cannot be undone.</p>
+          <button class="btn btn-danger btn-sm" id="delete-account-btn"><i class="ph ph-trash"></i> Delete My Account</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/validator.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAuth()) return;
+  Utils.initSidebar();
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  });
+
+  // Load profile
+  try {
+    const res  = await Api.get('/users/me');
+    const user = res.data?.user;
+    if (!user) throw new Error();
+    Auth.setUser(user);
+
+    const initials = (user.full_name||user.email||'U').split(' ').map((w)=>w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('profile-avatar-initials').textContent = initials;
+    document.getElementById('profile-name').textContent   = user.full_name || '—';
+    document.getElementById('profile-email').textContent  = user.email || '—';
+    document.getElementById('profile-role').textContent   = Utils.capitalize(user.role || 'user');
+    document.getElementById('profile-joined').textContent = 'Joined ' + Utils.formatDate(user.created_at);
+
+    document.getElementById('full_name').value    = user.full_name || '';
+    document.getElementById('email-display').value= user.email || '';
+    document.getElementById('phone').value        = user.phone || '';
+    document.getElementById('gender').value       = user.gender || '';
+    document.getElementById('dob').value          = user.date_of_birth?.slice(0,10) || '';
+
+    // Avatar
+    if (user.avatar_url) {
+      const img = document.createElement('img');
+      img.src = user.avatar_url;
+      img.alt = 'Profile avatar';
+      document.getElementById('profile-avatar-initials').replaceWith(img);
+    }
+  } catch { Utils.toastError('Failed to load profile.'); }
+
+  // Avatar upload
+  document.getElementById('avatar-trigger').addEventListener('click', () => document.getElementById('avatar-file').click());
+  document.getElementById('avatar-trigger').addEventListener('keydown', (e) => { if (e.key==='Enter'||e.key===' ') document.getElementById('avatar-file').click(); });
+  document.getElementById('avatar-file').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const err = Utils.validateFile(file, Config.ALLOWED_IMAGE_TYPES);
+    if (err) { Utils.toastError(err); return; }
+    const fd = new FormData();
+    fd.append('avatar', file);
+    try {
+      await Api.upload('/users/me/avatar', fd);
+      Utils.toastSuccess('Avatar updated.');
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const trig = document.getElementById('avatar-trigger');
+        trig.innerHTML = `<img src="${ev.target.result}" alt="Avatar"><div class="change-overlay"><i class="ph ph-camera"></i></div><input type="file" id="avatar-file" accept="image/jpeg,image/png,image/webp" style="display:none">`;
+      };
+      reader.readAsDataURL(file);
+    } catch { Utils.toastError('Avatar upload failed.'); }
+  });
+
+  // Save profile
+  document.getElementById('profile-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { valid } = Validator.validate(e.target, Validator.schemas.profile);
+    if (!valid) return;
+    const btn = document.getElementById('save-profile-btn');
+    Utils.setButtonLoading(btn, true);
+    try {
+      await Api.put('/users/me', {
+        full_name:     document.getElementById('full_name').value.trim(),
+        phone:         document.getElementById('phone').value.trim(),
+        gender:        document.getElementById('gender').value,
+        date_of_birth: document.getElementById('dob').value || null,
+      });
+      Utils.toastSuccess('Profile updated successfully.', 'Saved');
+    } catch (err) { Utils.toastError(err.message || 'Update failed.'); }
+    finally { Utils.setButtonLoading(btn, false); }
+  });
+
+  // Logout all
+  document.getElementById('logout-all-btn').addEventListener('click', async () => {
+    if (!await Utils.confirm('Logout from all devices?', 'Logout All')) return;
+    try { await Api.post('/auth/logout-all', {}); Auth.logout(); } catch { Auth.logout(); }
+  });
+
+  // Delete account
+  document.getElementById('delete-account-btn').addEventListener('click', async () => {
+    if (!await Utils.confirm('This will permanently delete your account and ALL your data. Are you absolutely sure?', '⚠️ Delete Account')) return;
+    try {
+      await Api.delete('/users/me');
+      Auth.logout();
+    } catch (err) { Utils.toastError(err.message || 'Could not delete account. Contact support.'); }
+  });
+
+  // Emergency contacts (placeholder)
+  document.getElementById('emergency-contacts-list').innerHTML = `<p class="text-sm text-muted">No emergency contacts added yet.</p>`;
+  document.getElementById('add-contact-btn').addEventListener('click', () => {
+    Utils.toastInfo('Emergency contacts feature coming soon.');
+  });
+
+  Validator.attachLiveValidation(document.getElementById('profile-form'), Validator.schemas.profile);
+});
+</script>
+</body>
+</html>

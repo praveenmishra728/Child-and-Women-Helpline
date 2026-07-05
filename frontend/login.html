@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Login to SurakshaAI – Secure OTP-based authentication." />
+  <meta name="robots" content="noindex" />
+  <title>Login – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+
+<body>
+
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════════════════════════════ -->
+  <main class="auth-page" role="main">
+
+    <!-- STEP 1: EMAIL ENTRY -->
+    <div class="auth-card animate-slide-up" id="step-email" role="region" aria-labelledby="login-title">
+      <div class="auth-logo">
+        <div class="auth-logo-icon" aria-hidden="true"><i class="ph-bold ph-shield-star"></i></div>
+        <div class="auth-logo-text">
+          <h2>SurakshaAI</h2>
+          <p>Women & Child Safety Portal</p>
+        </div>
+      </div>
+
+      <h1 class="auth-title" id="login-title">Welcome Back</h1>
+      <p class="auth-subtitle">Enter your email to receive a secure One-Time Password.</p>
+
+      <form id="email-form" novalidate aria-label="Email login form">
+        <div class="form-group">
+          <label class="form-label" for="email">
+            Email Address <span class="required" aria-label="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <i class="ph ph-envelope input-icon" aria-hidden="true"></i>
+            <input type="email" id="email" name="email" class="form-control" placeholder="yourname@example.com"
+              autocomplete="email" aria-required="true" maxlength="254" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full mt-6" id="send-otp-btn">
+          <i class="ph-bold ph-paper-plane-right" aria-hidden="true"></i>
+          <span class="btn-text">Send OTP</span>
+        </button>
+      </form>
+
+      <div class="divider"></div>
+      <p class="text-center text-sm text-muted">
+        By continuing, you agree to our
+        <a href="#" style="color:var(--color-primary)">Privacy Policy</a> and
+        <a href="#" style="color:var(--color-primary)">Terms of Service</a>.
+      </p>
+      <p class="text-center text-sm mt-4">
+        <a href="index.html"
+          style="color:var(--color-primary);display:flex;align-items:center;justify-content:center;gap:4px">
+          <i class="ph ph-arrow-left" aria-hidden="true"></i> Back to Home
+        </a>
+      </p>
+    </div>
+
+    <!-- STEP 2: OTP VERIFICATION -->
+    <div class="auth-card animate-slide-up hidden" id="step-otp" role="region" aria-labelledby="otp-title">
+      <div class="auth-logo">
+        <div class="auth-logo-icon" style="background:linear-gradient(135deg,var(--color-success),#047857)"
+          aria-hidden="true">
+          <i class="ph-bold ph-envelope-open"></i>
+        </div>
+        <div class="auth-logo-text">
+          <h2>Check Email</h2>
+          <p>OTP sent successfully</p>
+        </div>
+      </div>
+
+      <h1 class="auth-title" id="otp-title">Verify OTP</h1>
+      <p class="auth-subtitle">
+        We sent a 6-digit code to <strong id="otp-email-display"></strong>.
+        <button class="btn btn-ghost btn-sm mt-2" id="change-email-btn" style="width:100%">
+          <i class="ph ph-pencil-simple" aria-hidden="true"></i> Change Email
+        </button>
+      </p>
+
+      <form id="otp-form" novalidate aria-label="OTP verification form">
+        <div class="form-group">
+          <label class="form-label text-center" for="otp-1">Enter 6-digit OTP</label>
+          <div class="otp-inputs" role="group" aria-label="OTP input fields">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-1" aria-label="OTP digit 1"
+              autocomplete="one-time-code" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-2"
+              aria-label="OTP digit 2" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-3"
+              aria-label="OTP digit 3" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-4"
+              aria-label="OTP digit 4" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-5"
+              aria-label="OTP digit 5" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="otp-6"
+              aria-label="OTP digit 6" />
+          </div>
+        </div>
+
+        <div class="otp-timer" aria-live="polite">
+          Code expires in <span id="otp-countdown">5:00</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full mt-6" id="verify-btn">
+          <i class="ph-bold ph-check-circle" aria-hidden="true"></i>
+          <span class="btn-text">Verify & Login</span>
+        </button>
+      </form>
+
+      <p class="text-center text-sm mt-4">
+        Didn't receive the code?
+        <button class="btn btn-ghost btn-sm" id="resend-btn" disabled>
+          Resend OTP <span id="resend-countdown"></span>
+        </button>
+      </p>
+    </div>
+
+  </main>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/utils.js"></script>
+  <script src="assets/js/validator.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Redirect if already logged in
+      Auth.redirectIfLoggedIn('/dashboard.html');
+
+      // ─── State ─────────────────────────────────────────────────────
+      let currentEmail = '';
+      let otpTimer = null;
+
+      const stepEmail = document.getElementById('step-email');
+      const stepOtp = document.getElementById('step-otp');
+
+      // ─── STEP 1: Send OTP ──────────────────────────────────────────
+      document.getElementById('email-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const { valid } = Validator.validate(e.target, Validator.schemas.login);
+        if (!valid) return;
+
+        const btn = document.getElementById('send-otp-btn');
+        Utils.setButtonLoading(btn, true);
+
+        try {
+          currentEmail = document.getElementById('email').value.trim().toLowerCase();
+          await Auth.sendOtp(currentEmail);
+
+          Utils.toastSuccess('OTP sent to your email.', 'Check Inbox');
+          document.getElementById('otp-email-display').textContent = currentEmail;
+          Utils.hide(stepEmail);
+          Utils.show(stepOtp);
+          startOtpTimer();
+          document.getElementById('otp-1').focus();
+        } catch (err) {
+          Utils.toastError(err.message || 'Failed to send OTP. Please try again.');
+        } finally {
+          Utils.setButtonLoading(btn, false);
+        }
+      });
+
+      // ─── STEP 2: Verify OTP ────────────────────────────────────────
+      document.getElementById('otp-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = Array.from(document.querySelectorAll('.otp-input'))
+          .map((i) => i.value).join('');
+
+        if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+          Utils.toastError('Please enter the complete 6-digit OTP.');
+          return;
+        }
+
+        const btn = document.getElementById('verify-btn');
+        Utils.setButtonLoading(btn, true);
+
+        try {
+          const user = await Auth.verifyOtp(currentEmail, otp);
+          Utils.toastSuccess(`Welcome, ${user.full_name || 'User'}!`, 'Login Successful');
+          clearInterval(otpTimer);
+          const redirect = sessionStorage.getItem('redirect_after_login') || '/dashboard.html';
+          sessionStorage.removeItem('redirect_after_login');
+          setTimeout(() => { window.location.href = redirect; }, 800);
+        } catch (err) {
+          Utils.toastError(err.message || 'Invalid OTP. Please try again.');
+          Utils.setButtonLoading(btn, false);
+          document.querySelectorAll('.otp-input').forEach((i) => { i.value = ''; i.classList.remove('filled'); });
+          document.getElementById('otp-1').focus();
+        }
+      });
+
+      // ─── OTP Input auto-advance ────────────────────────────────────
+      const otpInputs = document.querySelectorAll('.otp-input');
+      otpInputs.forEach((input, idx) => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.replace(/\D/g, '');
+          e.target.value = val;
+          if (val) {
+            e.target.classList.add('filled');
+            if (idx < otpInputs.length - 1) otpInputs[idx + 1].focus();
+          } else {
+            e.target.classList.remove('filled');
+          }
+          // Auto-submit when all filled
+          const all = Array.from(otpInputs).every((i) => i.value.length === 1);
+          if (all) document.getElementById('otp-form').dispatchEvent(new Event('submit'));
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Backspace' && !input.value && idx > 0) otpInputs[idx - 1].focus();
+        });
+        input.addEventListener('paste', (e) => {
+          const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+          pasted.split('').forEach((ch, i) => {
+            if (otpInputs[i]) { otpInputs[i].value = ch; otpInputs[i].classList.add('filled'); }
+          });
+          e.preventDefault();
+          if (pasted.length === 6) document.getElementById('otp-form').dispatchEvent(new Event('submit'));
+        });
+      });
+
+      // ─── OTP Countdown timer ───────────────────────────────────────
+      const startOtpTimer = () => {
+        let remaining = Config.OTP_EXPIRY_SECONDS;
+        const countdownEl = document.getElementById('otp-countdown');
+        const resendBtn = document.getElementById('resend-btn');
+        const resendSec = document.getElementById('resend-countdown');
+        clearInterval(otpTimer);
+        otpTimer = setInterval(() => {
+          remaining--;
+          const m = Math.floor(remaining / 60);
+          const s = remaining % 60;
+          countdownEl.textContent = `${m}:${String(s).padStart(2, '0')}`;
+          if (remaining <= 30) {
+            resendBtn.disabled = false;
+            resendSec.textContent = '';
+          }
+          if (remaining <= 0) {
+            clearInterval(otpTimer);
+            countdownEl.textContent = 'Expired';
+            Utils.toastWarning('OTP has expired. Please request a new one.');
+          }
+        }, 1000);
+      };
+
+      // ─── Resend OTP ────────────────────────────────────────────────
+      document.getElementById('resend-btn').addEventListener('click', async () => {
+        try {
+          await Auth.sendOtp(currentEmail);
+          Utils.toastSuccess('New OTP sent!');
+          document.querySelectorAll('.otp-input').forEach((i) => { i.value = ''; i.classList.remove('filled'); });
+          document.getElementById('resend-btn').disabled = true;
+          startOtpTimer();
+          document.getElementById('otp-1').focus();
+        } catch (err) {
+          Utils.toastError(err.message || 'Failed to resend OTP.');
+        }
+      });
+
+      // ─── Change email ──────────────────────────────────────────────
+      document.getElementById('change-email-btn').addEventListener('click', () => {
+        clearInterval(otpTimer);
+        Utils.show(stepEmail);
+        Utils.hide(stepOtp);
+        document.getElementById('email').value = currentEmail;
+        document.getElementById('email').focus();
+      });
+    });
+  </script>
+</body>
+
+</html>

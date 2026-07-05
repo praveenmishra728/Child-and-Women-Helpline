@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SurakshaAI – India's AI-powered Women & Child Safety Portal. Report incidents, get emergency help, and access the AI Safety Assistant instantly." />
+  <meta name="keywords" content="women safety, child safety, helpline, report incident, AI assistant, India" />
+  <meta property="og:title" content="SurakshaAI – Women & Child Safety Portal" />
+  <meta property="og:description" content="AI-powered safety portal for Women & Children in India." />
+  <title>SurakshaAI – Women & Child Safety Portal | Home</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo" aria-hidden="true"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+
+  <div class="navbar-nav">
+    <a href="index.html"         class="nav-link active"><i class="ph ph-house"></i>Home</a>
+    <a href="safety-tips.html"   class="nav-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+    <a href="emergency.html"     class="nav-link"><i class="ph ph-phone-call"></i>Emergency</a>
+    <a href="about.html"         class="nav-link"><i class="ph ph-info"></i>About</a>
+    <a href="contact.html"       class="nav-link"><i class="ph ph-envelope"></i>Contact</a>
+  </div>
+
+  <div class="navbar-actions">
+    <a href="emergency.html" class="btn btn-danger btn-sm" id="navbar-sos" aria-label="Emergency SOS">
+      <i class="ph-bold ph-phone"></i> SOS
+    </a>
+    <!-- Shown when logged in -->
+    <div id="nav-user-section" class="hidden dropdown">
+      <button class="notif-btn" id="nav-notif-btn" aria-label="Notifications" aria-haspopup="true">
+        <i class="ph ph-bell"></i>
+        <span class="notif-badge hidden" id="notif-badge" aria-label="unread notifications"></span>
+      </button>
+      <button class="user-avatar-btn" data-dropdown-trigger aria-haspopup="true" aria-expanded="false">
+        <div class="user-avatar" id="nav-user-avatar" aria-hidden="true">U</div>
+        <span class="user-name" id="nav-user-name">User</span>
+        <i class="ph ph-caret-down" style="font-size:0.75rem;color:var(--color-gray-400)"></i>
+      </button>
+      <div class="dropdown-menu" role="menu">
+        <a href="dashboard.html"    class="dropdown-item" role="menuitem"><i class="ph ph-squares-four"></i>Dashboard</a>
+        <a href="my-reports.html"   class="dropdown-item" role="menuitem"><i class="ph ph-file-text"></i>My Reports</a>
+        <a href="profile.html"      class="dropdown-item" role="menuitem"><i class="ph ph-user"></i>Profile</a>
+        <a href="notifications.html"class="dropdown-item" role="menuitem"><i class="ph ph-bell"></i>Notifications</a>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" id="logout-btn" role="menuitem"><i class="ph ph-sign-out"></i>Logout</button>
+      </div>
+    </div>
+    <!-- Shown when logged out -->
+    <div id="nav-auth-section">
+      <a href="login.html" class="btn btn-primary btn-sm"><i class="ph-bold ph-sign-in"></i> Login</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav" id="mobile-nav" role="navigation" aria-label="Mobile navigation">
+  <a href="index.html"         class="nav-link"><i class="ph ph-house"></i>Home</a>
+  <a href="safety-tips.html"   class="nav-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+  <a href="emergency.html"     class="nav-link"><i class="ph ph-phone-call"></i>Emergency</a>
+  <a href="about.html"         class="nav-link"><i class="ph ph-info"></i>About</a>
+  <a href="contact.html"       class="nav-link"><i class="ph ph-envelope"></i>Contact</a>
+  <a href="login.html"         class="nav-link"><i class="ph ph-sign-in"></i>Login / Register</a>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO SECTION
+══════════════════════════════════════════════════════════════ -->
+<main>
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge" role="note">
+        <i class="ph ph-shield-check" aria-hidden="true"></i>
+        Government of India — Ministry of Women & Child Development
+      </div>
+      <h1 id="hero-heading">
+        Your Safety is Our <span class="highlight">Priority</span>
+      </h1>
+      <p>SurakshaAI provides instant emergency support, AI-powered safety assessment, and secure incident reporting for Women & Children across India.</p>
+      <div class="hero-actions">
+        <a href="report.html" class="btn btn-primary btn-lg">
+          <i class="ph-bold ph-warning-circle" aria-hidden="true"></i>
+          <span class="btn-text">Report Incident</span>
+        </a>
+        <a href="ai-assistant.html" class="btn btn-white-outline btn-lg">
+          <i class="ph-bold ph-robot" aria-hidden="true"></i>
+          <span class="btn-text">AI Safety Assistant</span>
+        </a>
+        <a href="emergency.html" class="btn btn-emergency btn-lg">
+          <i class="ph-bold ph-phone-call" aria-hidden="true"></i>
+          <span class="btn-text">SOS Emergency</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating info cards -->
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hero-float-cards">
+      <div class="hero-float-card">
+        <div style="font-size:1.5rem;margin-bottom:8px">🛡️</div>
+        <div style="font-weight:700;font-size:1rem">AI Safety Analysis</div>
+        <div style="font-size:0.8rem;opacity:0.7;margin-top:4px">Powered by GPT-4o</div>
+      </div>
+      <div class="hero-float-card">
+        <div style="font-weight:700;font-size:1.5rem;color:#f87171">112</div>
+        <div style="font-size:0.8rem;opacity:0.7;margin-top:4px">Police Emergency</div>
+        <div style="font-size:0.75rem;color:#6ee7b7">Available 24/7</div>
+      </div>
+      <div class="hero-float-card">
+        <div style="font-size:1.5rem;margin-bottom:8px">📄</div>
+        <div style="font-weight:700;font-size:0.95rem">Secure Reporting</div>
+        <div style="font-size:0.8rem;opacity:0.7;margin-top:4px">Anonymous option available</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     STATISTICS BAR
+══════════════════════════════════════════════════════════════ -->
+<section class="stats-bar" aria-label="Platform statistics">
+  <div class="container">
+    <div class="stats-bar-grid">
+      <div class="stats-bar-item text-center">
+        <div class="num" data-count="12500" id="stat-reports">0</div>
+        <div class="label">Incidents Reported</div>
+      </div>
+      <div class="stats-bar-item text-center">
+        <div class="num" data-count="9800" id="stat-resolved">0</div>
+        <div class="label">Cases Resolved</div>
+      </div>
+      <div class="stats-bar-item text-center">
+        <div class="num" data-count="45000" id="stat-users">0</div>
+        <div class="label">Registered Users</div>
+      </div>
+      <div class="stats-bar-item text-center">
+        <div class="num" data-count="28" id="stat-states">0</div>
+        <div class="label">States Covered</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     QUICK ACTIONS
+══════════════════════════════════════════════════════════════ -->
+<section class="section" aria-labelledby="quick-actions-heading">
+  <div class="container">
+    <div class="text-center mb-6">
+      <h2 id="quick-actions-heading">Quick Actions</h2>
+      <p>Access critical safety tools in one click</p>
+    </div>
+    <div class="quick-actions-grid">
+      <a href="report.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(26,86,219,0.10)"><i class="ph-bold ph-file-plus" style="color:var(--color-primary)"></i></div>
+        <span class="quick-card-title">Report Incident</span>
+      </a>
+      <a href="ai-assistant.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(124,58,237,0.10)"><i class="ph-bold ph-robot" style="color:var(--color-accent)"></i></div>
+        <span class="quick-card-title">AI Safety Assistant</span>
+      </a>
+      <a href="emergency.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(220,38,38,0.10)"><i class="ph-bold ph-phone-call" style="color:var(--color-danger)"></i></div>
+        <span class="quick-card-title">Emergency Contacts</span>
+      </a>
+      <a href="my-reports.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(5,150,105,0.10)"><i class="ph-bold ph-clipboard-text" style="color:var(--color-success)"></i></div>
+        <span class="quick-card-title">Track My Reports</span>
+      </a>
+      <a href="safety-tips.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(217,119,6,0.10)"><i class="ph-bold ph-lightbulb" style="color:var(--color-warning)"></i></div>
+        <span class="quick-card-title">Safety Tips</span>
+      </a>
+      <a href="login.html" class="quick-card card-hover">
+        <div class="quick-card-icon" style="background:rgba(26,86,219,0.10)"><i class="ph-bold ph-user-plus" style="color:var(--color-primary)"></i></div>
+        <span class="quick-card-title">Register / Login</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     EMERGENCY NUMBERS
+══════════════════════════════════════════════════════════════ -->
+<section class="emergency-section" aria-labelledby="emergency-heading">
+  <div class="container" style="position:relative">
+    <div class="text-center mb-6" style="color:white">
+      <h2 id="emergency-heading" style="color:white">Emergency Helplines</h2>
+      <p style="color:rgba(255,255,255,0.6)">Dial immediately in case of emergency. Available 24×7.</p>
+    </div>
+    <div class="emergency-numbers">
+      <a href="tel:112" class="emergency-card" aria-label="Police Emergency 112">
+        <div style="font-size:2rem;margin-bottom:8px">🚔</div>
+        <div class="emergency-number">112</div>
+        <div class="emergency-name">Police Emergency</div>
+      </a>
+      <a href="tel:181" class="emergency-card" aria-label="Women Helpline 181">
+        <div style="font-size:2rem;margin-bottom:8px">👩</div>
+        <div class="emergency-number">181</div>
+        <div class="emergency-name">Women Helpline</div>
+      </a>
+      <a href="tel:1098" class="emergency-card" aria-label="Child Helpline 1098">
+        <div style="font-size:2rem;margin-bottom:8px">👶</div>
+        <div class="emergency-number">1098</div>
+        <div class="emergency-name">Child Helpline</div>
+      </a>
+      <a href="tel:108" class="emergency-card" aria-label="Ambulance 108">
+        <div style="font-size:2rem;margin-bottom:8px">🚑</div>
+        <div class="emergency-number">108</div>
+        <div class="emergency-name">Ambulance</div>
+      </a>
+      <a href="tel:1930" class="emergency-card" aria-label="Cyber Crime 1930">
+        <div style="font-size:2rem;margin-bottom:8px">💻</div>
+        <div class="emergency-number">1930</div>
+        <div class="emergency-name">Cyber Crime</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     AI ASSISTANT PROMO
+══════════════════════════════════════════════════════════════ -->
+<section class="section" style="background:linear-gradient(135deg,rgba(26,86,219,0.05),rgba(124,58,237,0.05));">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-12);align-items:center;">
+      <div>
+        <div class="hero-badge" style="background:rgba(124,58,237,0.10);color:var(--color-accent);border-color:rgba(124,58,237,0.20)">
+          <i class="ph ph-robot"></i> AI Powered Safety
+        </div>
+        <h2 style="margin:var(--space-4) 0 var(--space-4)">Meet Your AI Safety Assistant</h2>
+        <p style="margin-bottom:var(--space-4)">Our SurakshaAI assistant speaks Hindi and English, understands your situation, detects potential dangers, and connects you to the right helplines — instantly.</p>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:var(--space-3);margin-bottom:var(--space-6)">
+          <li style="display:flex;gap:var(--space-3);align-items:flex-start"><span style="color:var(--color-success);font-size:1.2rem">✓</span><div><strong>Understands Hindi & English</strong><br><small style="color:var(--color-text-muted)">Responds in your preferred language</small></div></li>
+          <li style="display:flex;gap:var(--space-3);align-items:flex-start"><span style="color:var(--color-success);font-size:1.2rem">✓</span><div><strong>Detects 12 Emergency Categories</strong><br><small style="color:var(--color-text-muted)">Domestic violence, child abuse, cyber crime and more</small></div></li>
+          <li style="display:flex;gap:var(--space-3);align-items:flex-start"><span style="color:var(--color-success);font-size:1.2rem">✓</span><div><strong>Instant Helpline Recommendations</strong><br><small style="color:var(--color-text-muted)">Provides relevant emergency contacts automatically</small></div></li>
+        </ul>
+        <a href="ai-assistant.html" class="btn btn-accent btn-lg"><i class="ph-bold ph-robot"></i> Try AI Assistant Free</a>
+      </div>
+      <div>
+        <!-- Mock chat preview -->
+        <div class="card" style="border-radius:var(--radius-2xl);overflow:hidden;box-shadow:var(--shadow-xl)">
+          <div class="chat-header" style="background:linear-gradient(90deg,rgba(26,86,219,0.08),rgba(124,58,237,0.08))">
+            <div class="ai-avatar"><i class="ph-bold ph-robot"></i></div>
+            <div><div style="font-weight:700">SurakshaAI</div><div class="ai-status">Online & Ready to Help</div></div>
+          </div>
+          <div style="padding:var(--space-5);display:flex;flex-direction:column;gap:var(--space-4)">
+            <div class="msg-row">
+              <div class="msg-avatar ai"><i class="ph-bold ph-robot" style="font-size:0.8rem"></i></div>
+              <div class="msg-bubble ai">नमस्ते! मैं SurakshaAI हूँ। क्या आपको किसी सुरक्षा समस्या में मदद चाहिए?</div>
+            </div>
+            <div class="msg-row user">
+              <div class="msg-bubble user">हाँ, मुझे मेरी स्थिति के बारे में बताना है।</div>
+              <div class="msg-avatar user"><i class="ph-bold ph-user" style="font-size:0.8rem"></i></div>
+            </div>
+            <div class="msg-row">
+              <div class="msg-avatar ai"><i class="ph-bold ph-robot" style="font-size:0.8rem"></i></div>
+              <div class="msg-bubble ai">
+                <div>मैं आपकी बात सुनता हूँ। कृपया बताएं — अभी आप सुरक्षित हैं?</div>
+                <div class="badge badge-warning" style="margin-top:8px">Risk: Medium</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FAQ
+══════════════════════════════════════════════════════════════ -->
+<section class="section" aria-labelledby="faq-heading">
+  <div class="container" style="max-width:760px">
+    <div class="text-center mb-6">
+      <h2 id="faq-heading">Frequently Asked Questions</h2>
+      <p>Common questions about the SurakshaAI portal</p>
+    </div>
+    <div id="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Is my report anonymous? <span class="faq-icon" aria-hidden="true"><i class="ph ph-caret-down"></i></span>
+        </button>
+        <div class="faq-answer">Yes. You can submit reports anonymously. Your identity will not be disclosed to the accused or the public. Even anonymous reports are investigated by authorized officials.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Who can use SurakshaAI? <span class="faq-icon" aria-hidden="true"><i class="ph ph-caret-down"></i></span>
+        </button>
+        <div class="faq-answer">Any citizen can use SurakshaAI. The AI assistant and emergency contacts are open to everyone without login. Report filing and tracking require a registered account.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          What happens after I submit a report? <span class="faq-icon" aria-hidden="true"><i class="ph ph-caret-down"></i></span>
+        </button>
+        <div class="faq-answer">Your report is reviewed by trained officers within 24 hours. You will receive notifications at every status change. You can track your report in real time from your dashboard.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">
+          Is the AI chat safe and private? <span class="faq-icon" aria-hidden="true"><i class="ph ph-caret-down"></i></span>
+        </button>
+        <div class="faq-answer">Yes. All AI conversations are encrypted and stored securely. Conversation history is only accessible to you. We never share your chat content with third parties.</div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>🛡️ SurakshaAI</h3>
+        <p>A Government of India initiative for the safety and security of Women & Children. Available 24×7 across 28 states.</p>
+        <div class="footer-helplines" style="margin-top:var(--space-5)">
+          <div class="helpline-chip">🚔 Police <span>112</span></div>
+          <div class="helpline-chip">👩 Women <span>181</span></div>
+          <div class="helpline-chip">👶 Child <span>1098</span></div>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul class="footer-links">
+          <li><a href="report.html">Report Incident</a></li>
+          <li><a href="ai-assistant.html">AI Safety Assistant</a></li>
+          <li><a href="my-reports.html">Track Reports</a></li>
+          <li><a href="emergency.html">Emergency Contacts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Information</h4>
+        <ul class="footer-links">
+          <li><a href="safety-tips.html">Safety Tips</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <ul class="footer-links">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="notifications.html">Notifications</a></li>
+          <li><a href="profile.html">Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 SurakshaAI. All rights reserved. Government of India.</span>
+      <span>Built with ❤️ for the safety of every Indian woman and child.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast container -->
+<div id="toast-container" class="toast-container" role="region" aria-label="Notifications" aria-live="polite"></div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/validator.js"></script>
+<script>
+  // ── Navbar auth state
+  document.addEventListener('DOMContentLoaded', () => {
+    if (Auth.isLoggedIn()) {
+      Utils.show(document.getElementById('nav-user-section'));
+      Utils.hide(document.getElementById('nav-auth-section'));
+      Auth.populateNavUser();
+    }
+
+    // Logout
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      if (await Utils.confirm('Are you sure you want to logout?', 'Logout')) {
+        await Auth.logout();
+      }
+    });
+
+    // Hamburger toggle
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    hamburger?.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      hamburger.setAttribute('aria-expanded', open);
+    });
+
+    // Dropdown
+    Utils.initDropdowns();
+
+    // FAQ
+    Utils.initFaqAccordion();
+
+    // Animate counters when visible
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          document.querySelectorAll('[data-count]').forEach((el) => {
+            Utils.animateCounter(el, parseInt(el.dataset.count));
+          });
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    const statsBar = document.querySelector('.stats-bar');
+    if (statsBar) observer.observe(statsBar);
+
+    // Load unread notification count
+    if (Auth.isLoggedIn()) {
+      Api.get('/notifications?unread=true').then((res) => {
+        const count = res.data?.count || 0;
+        const badge = document.getElementById('notif-badge');
+        if (badge && count > 0) {
+          badge.textContent = count > 9 ? '9+' : count;
+          Utils.show(badge);
+        }
+      }).catch(() => {});
+    }
+  });
+</script>
+</body>
+</html>

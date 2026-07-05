@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/layout.css" />
+  <link rel="stylesheet" href="../assets/css/pages.css" />
+  <link rel="stylesheet" href="../assets/css/responsive.css" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<div class="admin-layout">
+
+  <!-- ADMIN SIDEBAR -->
+  <aside class="admin-sidebar" id="admin-sidebar" role="navigation" aria-label="Admin navigation">
+    <div class="sidebar-logo" style="margin-bottom:var(--space-6)">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div>
+        <div class="sidebar-logo-text">SurakshaAI</div>
+        <div class="sidebar-logo-sub" style="color:var(--color-gray-600)">Admin Panel</div>
+      </div>
+    </div>
+
+    <div class="admin-nav-label">Overview</div>
+    <a href="dashboard.html"  class="admin-link active" aria-current="page"><i class="ph ph-squares-four"></i>Dashboard</a>
+    <a href="dashboard.html#analytics" class="admin-link"><i class="ph ph-chart-bar"></i>Analytics</a>
+
+    <div class="admin-nav-label">Reports</div>
+    <a href="dashboard.html#reports"   class="admin-link"><i class="ph ph-files"></i>All Reports</a>
+    <a href="dashboard.html#emergency" class="admin-link" style="color:#f87171"><i class="ph ph-warning"></i>Emergency Reports</a>
+
+    <div class="admin-nav-label">Management</div>
+    <a href="dashboard.html#users"     class="admin-link"><i class="ph ph-users"></i>User Management</a>
+    <a href="dashboard.html#notify"    class="admin-link"><i class="ph ph-bell"></i>Send Notification</a>
+    <a href="dashboard.html#audit"     class="admin-link"><i class="ph ph-file-text"></i>Audit Logs</a>
+
+    <div class="admin-nav-label" style="margin-top:auto;padding-top:var(--space-8)">Account</div>
+    <button class="admin-link" id="admin-logout-btn" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;color:#f87171">
+      <i class="ph ph-sign-out"></i>Logout
+    </button>
+  </aside>
+
+  <!-- ADMIN MAIN -->
+  <div class="admin-content">
+
+    <!-- Topbar -->
+    <header class="admin-topbar" role="banner">
+      <div>
+        <h1 style="font-size:var(--font-size-xl);font-weight:700;color:var(--color-gray-900)">Admin Dashboard</h1>
+        <p class="text-sm text-muted" id="admin-date"></p>
+      </div>
+      <div style="display:flex;gap:var(--space-3);align-items:center">
+        <div class="user-avatar" id="admin-avatar" style="width:38px;height:38px;font-size:0.85rem">A</div>
+        <span class="font-semibold text-sm" id="admin-name">Admin</span>
+      </div>
+    </header>
+
+    <div class="admin-page-body">
+
+      <!-- ── KPI STATS ─────────────────────────────────────────── -->
+      <section aria-labelledby="kpi-heading">
+        <h2 id="kpi-heading" class="sr-only">Key Performance Indicators</h2>
+        <div class="stats-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin-bottom:var(--space-6)">
+          <div class="stat-card"><div class="stat-icon blue"><i class="ph-bold ph-users"></i></div><div><div class="stat-value" id="kpi-users">—</div><div class="stat-label">Total Users</div></div></div>
+          <div class="stat-card"><div class="stat-icon purple"><i class="ph-bold ph-files"></i></div><div><div class="stat-value" id="kpi-total">—</div><div class="stat-label">Total Reports</div></div></div>
+          <div class="stat-card"><div class="stat-icon orange"><i class="ph-bold ph-clock"></i></div><div><div class="stat-value" id="kpi-pending">—</div><div class="stat-label">Pending Review</div></div></div>
+          <div class="stat-card"><div class="stat-icon green"><i class="ph-bold ph-check-circle"></i></div><div><div class="stat-value" id="kpi-resolved">—</div><div class="stat-label">Resolved</div></div></div>
+          <div class="stat-card"><div class="stat-icon red"><i class="ph-bold ph-warning"></i></div><div><div class="stat-value" id="kpi-emergency">—</div><div class="stat-label">Emergency</div></div></div>
+          <div class="stat-card"><div class="stat-icon purple"><i class="ph-bold ph-robot"></i></div><div><div class="stat-value" id="kpi-ai">—</div><div class="stat-label">AI Sessions</div></div></div>
+        </div>
+      </section>
+
+      <!-- ── CHARTS ───────────────────────────────────────────── -->
+      <section class="charts-grid mb-6" aria-label="Analytics charts">
+        <div class="chart-card">
+          <div class="chart-header"><h3 class="chart-title">Reports by Status</h3></div>
+          <canvas id="statusChart" height="200" aria-label="Reports by status chart" role="img"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3 class="chart-title">Reports by Month</h3></div>
+          <canvas id="monthChart" height="200" aria-label="Reports by month chart" role="img"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3 class="chart-title">Reports by Incident Type</h3></div>
+          <canvas id="typeChart" height="200" aria-label="Reports by incident type" role="img"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><h3 class="chart-title">Risk Level Distribution</h3></div>
+          <canvas id="riskChart" height="200" aria-label="Risk level distribution chart" role="img"></canvas>
+        </div>
+      </section>
+
+      <!-- ── REPORTS TABLE ────────────────────────────────────── -->
+      <section id="reports" class="chart-card mb-6" aria-labelledby="reports-table-heading">
+        <div class="chart-header">
+          <h3 class="chart-title" id="reports-table-heading"><i class="ph ph-files"></i> All Reports</h3>
+          <div style="display:flex;gap:var(--space-3)">
+            <div class="search-bar" style="max-width:280px">
+              <i class="ph ph-magnifying-glass"></i>
+              <input type="text" id="report-search" placeholder="Search…" aria-label="Search reports" />
+            </div>
+            <select class="form-control" id="report-filter-status" style="width:150px;border-radius:var(--radius-full)">
+              <option value="">All Status</option>
+              <option value="submitted">Submitted</option>
+              <option value="under_review">Under Review</option>
+              <option value="assigned">Assigned</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table aria-label="Admin reports management table">
+            <thead>
+              <tr><th>Case ID</th><th>Type</th><th>Victim</th><th>Status</th><th>Risk</th><th>Priority</th><th>Date</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-reports-body">
+              <tr><td colspan="8" style="text-align:center;padding:var(--space-10)"><div class="spinner spinner-sm" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="reports-pagination" role="navigation" aria-label="Reports pagination"></div>
+      </section>
+
+      <!-- ── USERS TABLE ──────────────────────────────────────── -->
+      <section id="users" class="chart-card mb-6" aria-labelledby="users-table-heading">
+        <div class="chart-header">
+          <h3 class="chart-title" id="users-table-heading"><i class="ph ph-users"></i> User Management</h3>
+          <div class="search-bar" style="max-width:280px">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="user-search" placeholder="Search users…" aria-label="Search users" />
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table aria-label="User management table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="admin-users-body">
+              <tr><td colspan="5" style="text-align:center;padding:var(--space-10)"><div class="spinner spinner-sm" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="users-pagination" role="navigation" aria-label="Users pagination"></div>
+      </section>
+
+      <!-- ── AUDIT LOGS ───────────────────────────────────────── -->
+      <section id="audit" class="chart-card mb-6" aria-labelledby="audit-heading">
+        <div class="chart-header">
+          <h3 class="chart-title" id="audit-heading"><i class="ph ph-file-text"></i> Audit Logs</h3>
+        </div>
+        <div class="table-wrapper">
+          <table aria-label="Audit logs table">
+            <thead>
+              <tr><th>Action</th><th>Table</th><th>Admin</th><th>IP</th><th>Time</th></tr>
+            </thead>
+            <tbody id="audit-body">
+              <tr><td colspan="5" style="text-align:center;padding:var(--space-10)"><div class="spinner spinner-sm" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div><!-- /.admin-page-body -->
+  </div><!-- /.admin-content -->
+</div><!-- /.admin-layout -->
+
+<!-- Update Status Modal -->
+<div class="modal-overlay" id="status-modal" role="dialog" aria-modal="true" aria-labelledby="status-modal-title">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="status-modal-title">Update Report Status</h3>
+      <button class="modal-close" onclick="Utils.closeModal('status-modal')" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="new-status">New Status</label>
+        <select class="form-control" id="new-status">
+          <option value="submitted">Submitted</option>
+          <option value="under_review">Under Review</option>
+          <option value="assigned">Assigned</option>
+          <option value="in_progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+          <option value="rejected">Rejected</option>
+          <option value="closed">Closed</option>
+        </select>
+      </div>
+      <div class="form-group mt-4">
+        <label class="form-label" for="status-note">Internal Note</label>
+        <textarea class="form-control" id="status-note" rows="3" placeholder="Optional note…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Utils.closeModal('status-modal')">Cancel</button>
+      <button class="btn btn-primary" id="status-update-btn">Update Status</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAdmin()) return;
+
+  const user = Auth.getUser();
+  document.getElementById('admin-name').textContent = user?.full_name || 'Admin';
+  const initials = (user?.full_name || 'A').split(' ').map((w)=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('admin-avatar').textContent = initials;
+  document.getElementById('admin-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('admin-logout-btn').addEventListener('click', async () => {
+    if (await Utils.confirm('Logout from Admin Panel?')) await Auth.logout();
+  });
+
+  // ─── Load Dashboard Stats ─────────────────────────────────────
+  try {
+    const res   = await Api.get('/admin/dashboard');
+    const stats = res.data || {};
+    document.getElementById('kpi-users').textContent     = (stats.totalUsers || 0).toLocaleString();
+    document.getElementById('kpi-total').textContent     = (stats.totalReports || 0).toLocaleString();
+    document.getElementById('kpi-pending').textContent   = ((stats.byStatus?.submitted||0)+(stats.byStatus?.under_review||0)).toLocaleString();
+    document.getElementById('kpi-resolved').textContent  = (stats.byStatus?.resolved || 0).toLocaleString();
+    document.getElementById('kpi-emergency').textContent = (stats.emergency || 0).toLocaleString();
+    document.getElementById('kpi-ai').textContent        = (stats.aiConversations || 0).toLocaleString();
+
+    // ── Status Chart (Doughnut)
+    const byStatus = stats.byStatus || {};
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(byStatus).map((k) => Utils.prettyStatus(k)),
+        datasets: [{ data: Object.values(byStatus), backgroundColor: ['#94a3b8','#3b82f6','#f59e0b','#8b5cf6','#1d4ed8','#10b981','#ef4444','#475569'] }],
+      },
+      options: { plugins: { legend: { position: 'bottom' } } },
+    });
+  } catch { Utils.toastError('Failed to load dashboard stats.'); }
+
+  // ─── Analytics ───────────────────────────────────────────────
+  try {
+    const yr  = new Date().getFullYear();
+    const res = await Api.get(`/admin/analytics?year=${yr}`);
+    const data = res.data || {};
+
+    // Month chart (Bar)
+    const months = data.byMonth || {};
+    new Chart(document.getElementById('monthChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(months),
+        datasets: [{ label: 'Reports', data: Object.values(months), backgroundColor: 'rgba(26,86,219,0.7)', borderRadius: 6 }],
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+    });
+
+    // Type chart (Horizontal bar)
+    const types = data.byIncidentType || {};
+    new Chart(document.getElementById('typeChart'), {
+      type: 'bar',
+      data: {
+        labels: Object.keys(types),
+        datasets: [{ data: Object.values(types), backgroundColor: 'rgba(124,58,237,0.7)', borderRadius: 6 }],
+      },
+      options: { indexAxis: 'y', plugins: { legend: { display: false } } },
+    });
+
+    // Risk chart (Pie)
+    const risks = data.byRiskLevel || {};
+    new Chart(document.getElementById('riskChart'), {
+      type: 'pie',
+      data: {
+        labels: Object.keys(risks).map((k) => Utils.capitalize(k)),
+        datasets: [{ data: Object.values(risks), backgroundColor: ['#10b981','#f59e0b','#ea580c','#b91c1c','#94a3b8'] }],
+      },
+      options: { plugins: { legend: { position: 'bottom' } } },
+    });
+  } catch { /* Charts may be empty in dev */ }
+
+  // ─── Reports Table ────────────────────────────────────────────
+  let reportPage = 1;
+  let activeReportId = null;
+
+  const loadReports = async (page = 1) => {
+    const search = document.getElementById('report-search').value.trim();
+    const status = document.getElementById('report-filter-status').value;
+    const params = new URLSearchParams({ page, limit: 10 });
+    if (search) params.append('search', search);
+    if (status) params.append('status', status);
+    try {
+      const res   = await Api.get(`/admin/reports?${params}`);
+      const list  = res.data?.list || [];
+      const total = res.data?.total || 0;
+      const tbody = document.getElementById('admin-reports-body');
+      tbody.innerHTML = !list.length
+        ? `<tr><td colspan="8" style="text-align:center;padding:var(--space-8);color:var(--color-text-muted)">No reports found.</td></tr>`
+        : list.map((r) => `
+          <tr>
+            <td><span style="font-family:monospace;font-size:0.8rem">${Utils.escapeHtml(r.case_id||'—')}</span></td>
+            <td>${Utils.escapeHtml(r.incident_type||'—')}</td>
+            <td>${Utils.escapeHtml(r.victim_type||'—')}</td>
+            <td>${Utils.statusChip(r.status)}</td>
+            <td>${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : '—'}</td>
+            <td><span class="badge ${r.priority === 'critical' ? 'badge-danger' : r.priority === 'high' ? 'badge-warning' : 'badge-gray'}">${Utils.capitalize(r.priority||'—')}</span></td>
+            <td>${Utils.formatDate(r.created_at)}</td>
+            <td style="display:flex;gap:4px">
+              <button class="btn btn-ghost btn-sm" onclick="openStatusModal('${r.id}')" title="Update Status"><i class="ph ph-pencil-simple"></i></button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="adminDeleteReport('${r.id}')" title="Delete"><i class="ph ph-trash"></i></button>
+            </td>
+          </tr>`).join('');
+      Utils.renderPagination(document.getElementById('reports-pagination'), page, Math.ceil(total/10), (p) => { reportPage=p; loadReports(p); });
+    } catch { Utils.toastError('Failed to load reports.'); }
+  };
+  await loadReports();
+
+  let rDebounce;
+  document.getElementById('report-search').addEventListener('input', () => { clearTimeout(rDebounce); rDebounce = setTimeout(() => loadReports(1), 400); });
+  document.getElementById('report-filter-status').addEventListener('change', () => loadReports(1));
+
+  // Status update modal
+  window.openStatusModal = (id) => {
+    activeReportId = id;
+    document.getElementById('status-note').value = '';
+    Utils.openModal('status-modal');
+  };
+  document.getElementById('status-update-btn').addEventListener('click', async () => {
+    if (!activeReportId) return;
+    const status = document.getElementById('new-status').value;
+    const note   = document.getElementById('status-note').value;
+    try {
+      await Api.put(`/admin/reports/${activeReportId}/status`, { status, note });
+      Utils.closeModal('status-modal');
+      Utils.toastSuccess(`Status updated to "${Utils.prettyStatus(status)}".`);
+      loadReports(reportPage);
+    } catch (err) { Utils.toastError(err.message || 'Update failed.'); }
+  });
+
+  window.adminDeleteReport = async (id) => {
+    if (!await Utils.confirm('Permanently delete this report? This cannot be undone.', 'Delete Report')) return;
+    try {
+      await Api.delete(`/admin/reports/${id}`);
+      Utils.toastSuccess('Report deleted.');
+      loadReports(reportPage);
+    } catch (err) { Utils.toastError(err.message || 'Delete failed.'); }
+  };
+
+  // ─── Users Table ──────────────────────────────────────────────
+  let userPage = 1;
+  const loadUsers = async (page = 1) => {
+    const search = document.getElementById('user-search').value.trim();
+    const params = new URLSearchParams({ page, limit: 10 });
+    if (search) params.append('search', search);
+    try {
+      const res   = await Api.get(`/admin/users?${params}`);
+      const list  = res.data?.list || [];
+      const total = res.data?.total || 0;
+      const tbody = document.getElementById('admin-users-body');
+      tbody.innerHTML = !list.length
+        ? `<tr><td colspan="5" style="text-align:center;padding:var(--space-8);color:var(--color-text-muted)">No users found.</td></tr>`
+        : list.map((u) => `
+          <tr>
+            <td><div style="font-weight:600">${Utils.escapeHtml(u.full_name||'—')}</div></td>
+            <td>${Utils.escapeHtml(u.email||'—')}</td>
+            <td><span class="badge ${u.role==='admin'?'badge-accent':'badge-gray'}">${Utils.escapeHtml(u.role)}</span></td>
+            <td>${Utils.formatDate(u.created_at)}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="toggleUser('${u.id}',false)" title="Deactivate">
+                <i class="ph ph-user-minus" style="color:var(--color-danger)"></i>
+              </button>
+            </td>
+          </tr>`).join('');
+      Utils.renderPagination(document.getElementById('users-pagination'), page, Math.ceil(total/10), (p) => { userPage=p; loadUsers(p); });
+    } catch { Utils.toastError('Failed to load users.'); }
+  };
+  await loadUsers();
+
+  let uDebounce;
+  document.getElementById('user-search').addEventListener('input', () => { clearTimeout(uDebounce); uDebounce = setTimeout(() => loadUsers(1), 400); });
+
+  window.toggleUser = async (id, active) => {
+    const action = active ? 'Activate' : 'Deactivate';
+    if (!await Utils.confirm(`${action} this user?`, `${action} User`)) return;
+    try {
+      await Api.put(`/admin/users/${id}/status`, { active });
+      Utils.toastSuccess(`User ${active ? 'activated' : 'deactivated'}.`);
+      loadUsers(userPage);
+    } catch (err) { Utils.toastError(err.message); }
+  };
+
+  // ─── Audit Logs ───────────────────────────────────────────────
+  try {
+    const res   = await Api.get('/admin/audit-logs?limit=20');
+    const logs  = res.data?.list || [];
+    const tbody = document.getElementById('audit-body');
+    tbody.innerHTML = !logs.length
+      ? `<tr><td colspan="5" style="text-align:center;padding:var(--space-8)">No audit logs yet.</td></tr>`
+      : logs.map((l) => `
+        <tr>
+          <td><span class="badge badge-primary">${Utils.escapeHtml(l.action)}</span></td>
+          <td>${Utils.escapeHtml(l.target_table||'—')}</td>
+          <td>${Utils.escapeHtml(l.admin_id?.slice(0,8)||'—')}</td>
+          <td>${Utils.escapeHtml(l.ip_address||'—')}</td>
+          <td>${Utils.timeAgo(l.created_at)}</td>
+        </tr>`).join('');
+  } catch { /* audit may be empty */ }
+});
+</script>
+</body>
+</html>

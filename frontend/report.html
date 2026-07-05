@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Report Incident – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm"><i class="ph-bold ph-phone"></i> SOS</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div><div class="sidebar-logo-text">SurakshaAI</div><div class="sidebar-logo-sub">Safety Portal</div></div>
+    </div>
+    <div class="sidebar-section">
+      <a href="dashboard.html"   class="sidebar-link"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"      class="sidebar-link active"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"  class="sidebar-link"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="ai-assistant.html"class="sidebar-link"><i class="ph ph-robot"></i>AI Safety Assistant</a>
+      <a href="safety-tips.html" class="sidebar-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos"><i class="ph-bold ph-phone-call"></i>Emergency SOS</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="sep">›</span>
+      <span class="current">Report Incident</span>
+    </nav>
+    <h1 class="page-title">Report Incident</h1>
+    <p class="page-subtitle">Fill in the details below. All information is kept confidential and secure.</p>
+
+    <form id="report-form" novalidate aria-label="Incident report form">
+      <div class="report-form-card">
+
+        <!-- ── Section 1: Incident Details ──────────────────────── -->
+        <div class="form-section">
+          <h2 class="form-section-title"><i class="ph ph-warning-circle" aria-hidden="true"></i>Incident Details</h2>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="incident_type">Incident Type <span class="required">*</span></label>
+              <select class="form-control" id="incident_type" name="incident_type" required aria-required="true">
+                <option value="">— Select Type —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="victim_type">Victim Type <span class="required">*</span></label>
+              <select class="form-control" id="victim_type" name="victim_type" required>
+                <option value="">— Select —</option>
+                <option value="Women">Women</option>
+                <option value="Child">Child</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row mt-4">
+            <div class="form-group">
+              <label class="form-label" for="incident_date">Date of Incident <span class="required">*</span></label>
+              <input type="date" class="form-control" id="incident_date" name="incident_date" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="incident_time">Time of Incident</label>
+              <input type="time" class="form-control" id="incident_time" name="incident_time" />
+            </div>
+          </div>
+          <div class="form-group mt-4">
+            <label class="form-label" for="description">Incident Description <span class="required">*</span></label>
+            <textarea class="form-control" id="description" name="description" rows="5"
+              placeholder="Please describe what happened in detail (minimum 20 characters)..."
+              required aria-required="true" maxlength="5000"></textarea>
+            <div class="form-hint"><span id="desc-count">0</span>/5000 characters</div>
+          </div>
+        </div>
+
+        <!-- ── Section 2: Location ───────────────────────────────── -->
+        <div class="form-section">
+          <h2 class="form-section-title"><i class="ph ph-map-pin" aria-hidden="true"></i>Incident Location</h2>
+          <div class="form-group">
+            <label class="form-label" for="location_name">Location Name / Address</label>
+            <div class="input-wrapper">
+              <i class="ph ph-map-pin input-icon"></i>
+              <input type="text" class="form-control" id="location_name" name="location_name" placeholder="e.g. Connaught Place, New Delhi" maxlength="300" />
+            </div>
+          </div>
+          <div class="form-row mt-4">
+            <div class="form-group">
+              <label class="form-label" for="latitude">Latitude</label>
+              <input type="text" class="form-control" id="latitude" name="latitude" placeholder="28.6139" readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="longitude">Longitude</label>
+              <input type="text" class="form-control" id="longitude" name="longitude" placeholder="77.2090" readonly />
+            </div>
+          </div>
+          <div style="margin-top:var(--space-4)">
+            <div class="flex-between mb-2">
+              <span class="form-hint">Click the map to pin the incident location, or use your current location.</span>
+              <button type="button" class="btn btn-outline btn-sm" id="use-location-btn">
+                <i class="ph ph-navigation-arrow"></i> Use My Location
+              </button>
+            </div>
+            <div class="map-container" role="application" aria-label="Incident location map">
+              <div id="incident-map"></div>
+              <div class="map-instruction">📍 Click to pin location</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 3: Priority & Anonymous ──────────────────── -->
+        <div class="form-section">
+          <h2 class="form-section-title"><i class="ph ph-sliders" aria-hidden="true"></i>Report Settings</h2>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="priority">Priority Level</label>
+              <select class="form-control" id="priority" name="priority">
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+            <div class="form-group" style="justify-content:flex-end;align-items:flex-start;padding-top:28px">
+              <div class="toggle-wrap">
+                <label class="toggle" for="is_anonymous" aria-label="Submit anonymously">
+                  <input type="checkbox" id="is_anonymous" name="is_anonymous" />
+                  <span class="toggle-slider"></span>
+                </label>
+                <div>
+                  <div style="font-weight:600;font-size:var(--font-size-sm)">Anonymous Report</div>
+                  <div class="form-hint">Your identity will not be disclosed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Section 4: Attachments ────────────────────────────── -->
+        <div class="form-section">
+          <h2 class="form-section-title"><i class="ph ph-paperclip" aria-hidden="true"></i>Attachments <span style="font-weight:400;color:var(--color-text-muted);font-size:0.9rem">(Optional)</span></h2>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--space-4)">
+            <!-- Images -->
+            <div>
+              <label class="form-label">Images (JPG, PNG)</label>
+              <div class="file-upload" id="image-drop" role="button" tabindex="0" aria-label="Upload images">
+                <input type="file" id="image-input" accept="image/jpeg,image/png,image/webp" multiple />
+                <div class="upload-icon" aria-hidden="true">🖼️</div>
+                <div><span class="file-upload-label">Upload Images</span><br><small class="text-muted">Max 10MB each</small></div>
+              </div>
+              <div class="file-preview" id="image-preview" aria-label="Image previews"></div>
+            </div>
+            <!-- Documents -->
+            <div>
+              <label class="form-label">Documents (PDF)</label>
+              <div class="file-upload" id="doc-drop" role="button" tabindex="0" aria-label="Upload documents">
+                <input type="file" id="doc-input" accept="application/pdf" multiple />
+                <div class="upload-icon" aria-hidden="true">📄</div>
+                <div><span class="file-upload-label">Upload PDFs</span><br><small class="text-muted">Max 10MB each</small></div>
+              </div>
+              <div id="doc-names" style="margin-top:var(--space-2);font-size:var(--font-size-xs);color:var(--color-text-muted)"></div>
+            </div>
+            <!-- Audio -->
+            <div>
+              <label class="form-label">Audio Evidence</label>
+              <div class="file-upload" id="audio-drop" role="button" tabindex="0" aria-label="Upload audio">
+                <input type="file" id="audio-input" accept="audio/mpeg,audio/wav,audio/ogg" multiple />
+                <div class="upload-icon" aria-hidden="true">🎵</div>
+                <div><span class="file-upload-label">Upload Audio</span><br><small class="text-muted">MP3, WAV, OGG</small></div>
+              </div>
+              <div id="audio-names" style="margin-top:var(--space-2);font-size:var(--font-size-xs);color:var(--color-text-muted)"></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.report-form-card -->
+
+      <!-- Sticky action bar -->
+      <div class="form-actions-sticky">
+        <button type="button" class="btn btn-ghost" id="draft-btn">
+          <i class="ph ph-floppy-disk" aria-hidden="true"></i>
+          <span class="btn-text">Save Draft</span>
+        </button>
+        <button type="submit" class="btn btn-primary" id="submit-btn">
+          <i class="ph-bold ph-paper-plane-right" aria-hidden="true"></i>
+          <span class="btn-text">Submit Report</span>
+        </button>
+      </div>
+    </form>
+  </main>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script src="assets/js/validator.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (!Auth.requireAuth()) return;
+  Utils.initSidebar();
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  });
+
+  // Populate incident types
+  const typeSelect = document.getElementById('incident_type');
+  Config.INCIDENT_TYPES.forEach((t) => {
+    typeSelect.innerHTML += `<option value="${Utils.escapeHtml(t)}">${Utils.escapeHtml(t)}</option>`;
+  });
+
+  // Set today's date as max
+  document.getElementById('incident_date').max = new Date().toISOString().split('T')[0];
+
+  // Char count for description
+  document.getElementById('description').addEventListener('input', function() {
+    document.getElementById('desc-count').textContent = this.value.length;
+  });
+
+  // ─── Leaflet Map ─────────────────────────────────────────────
+  const map = L.map('incident-map').setView([20.5937, 78.9629], 5);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors', maxZoom: 18,
+  }).addTo(map);
+
+  let marker = null;
+  map.on('click', (e) => {
+    const { lat, lng } = e.latlng;
+    document.getElementById('latitude').value  = lat.toFixed(6);
+    document.getElementById('longitude').value = lng.toFixed(6);
+    if (marker) marker.setLatLng(e.latlng);
+    else marker = L.marker(e.latlng).addTo(map);
+  });
+
+  document.getElementById('use-location-btn').addEventListener('click', () => {
+    if (!navigator.geolocation) { Utils.toastError('Geolocation not supported.'); return; }
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      document.getElementById('latitude').value  = lat.toFixed(6);
+      document.getElementById('longitude').value = lng.toFixed(6);
+      map.setView([lat, lng], 15);
+      if (marker) marker.setLatLng([lat, lng]);
+      else marker = L.marker([lat, lng]).addTo(map);
+    }, () => Utils.toastError('Could not get your location.'));
+  });
+
+  // ─── File uploads ─────────────────────────────────────────────
+  const setupFileUpload = (dropId, inputId, previewId, allowedTypes, isImage = false) => {
+    const drop  = document.getElementById(dropId);
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    if (!drop || !input) return;
+
+    drop.addEventListener('click', () => input.click());
+    drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') input.click(); });
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('dragover'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', (e) => {
+      e.preventDefault(); drop.classList.remove('dragover');
+      const dt = new DataTransfer();
+      [...e.dataTransfer.files].forEach((f) => dt.items.add(f));
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    });
+
+    input.addEventListener('change', () => {
+      if (!preview) return;
+      if (!isImage) {
+        preview.innerHTML = [...input.files].map((f) => `<div style="padding:4px 0;font-size:var(--font-size-xs)">📄 ${Utils.escapeHtml(f.name)}</div>`).join('');
+        return;
+      }
+      preview.innerHTML = '';
+      [...input.files].forEach((file) => {
+        const err = Utils.validateFile(file, allowedTypes);
+        if (err) { Utils.toastError(err); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const item = document.createElement('div');
+          item.className = 'file-preview-item';
+          item.innerHTML = `<img src="${e.target.result}" alt="${Utils.escapeHtml(file.name)}">
+            <button type="button" class="remove-file" aria-label="Remove ${Utils.escapeHtml(file.name)}">×</button>`;
+          item.querySelector('.remove-file').addEventListener('click', () => item.remove());
+          preview.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+  };
+
+  setupFileUpload('image-drop', 'image-input', 'image-preview', Config.ALLOWED_IMAGE_TYPES, true);
+  setupFileUpload('doc-drop',   'doc-input',   'doc-names',    Config.ALLOWED_DOC_TYPES);
+  setupFileUpload('audio-drop', 'audio-input', 'audio-names',  Config.ALLOWED_AUDIO_TYPES);
+
+  // ─── Submit / Draft ───────────────────────────────────────────
+  const collectFormData = (status) => {
+    const form = document.getElementById('report-form');
+    const fd   = new FormData();
+    fd.append('status',         status);
+    fd.append('incident_type',  form.incident_type.value);
+    fd.append('victim_type',    form.victim_type.value);
+    fd.append('description',    Validator.sanitize(form.description.value));
+    fd.append('incident_date',  form.incident_date.value);
+    fd.append('incident_time',  form.incident_time.value);
+    fd.append('priority',       form.priority.value);
+    fd.append('is_anonymous',   form.is_anonymous.checked);
+    fd.append('location_name',  form.location_name?.value || '');
+    fd.append('latitude',       document.getElementById('latitude').value);
+    fd.append('longitude',      document.getElementById('longitude').value);
+    const imgInput   = document.getElementById('image-input');
+    const docInput   = document.getElementById('doc-input');
+    const audioInput = document.getElementById('audio-input');
+    [...(imgInput.files || [])].forEach((f) => fd.append('files', f));
+    [...(docInput.files || [])].forEach((f) => fd.append('files', f));
+    [...(audioInput.files || [])].forEach((f) => fd.append('files', f));
+    return fd;
+  };
+
+  // Draft
+  document.getElementById('draft-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('draft-btn');
+    Utils.setButtonLoading(btn, true);
+    try {
+      await Api.upload('/reports', collectFormData('draft'));
+      Utils.toastSuccess('Report saved as draft.', 'Draft Saved');
+    } catch (err) {
+      Utils.toastError(err.message || 'Failed to save draft.');
+    } finally {
+      Utils.setButtonLoading(btn, false);
+    }
+  });
+
+  // Submit
+  document.getElementById('report-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { valid } = Validator.validate(e.target, Validator.schemas.report);
+    if (!valid) return;
+
+    if (!await Utils.confirm('Submit this report? It will be sent to the authorities for review.', 'Submit Report')) return;
+
+    const btn = document.getElementById('submit-btn');
+    Utils.setButtonLoading(btn, true);
+    try {
+      const res = await Api.upload('/reports', collectFormData('submitted'));
+      Utils.toastSuccess(`Report ${res.data?.case_id || ''} submitted successfully.`, 'Report Submitted');
+      setTimeout(() => window.location.href = 'my-reports.html', 1500);
+    } catch (err) {
+      Utils.toastError(err.message || 'Failed to submit report. Please retry.');
+    } finally {
+      Utils.setButtonLoading(btn, false);
+    }
+  });
+
+  Validator.attachLiveValidation(document.getElementById('report-form'), Validator.schemas.report);
+});
+</script>
+</body>
+</html>

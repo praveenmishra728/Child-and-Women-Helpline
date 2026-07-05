@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Reports – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm"><i class="ph-bold ph-phone"></i> SOS</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div><div class="sidebar-logo-text">SurakshaAI</div><div class="sidebar-logo-sub">Safety Portal</div></div>
+    </div>
+    <div class="sidebar-section">
+      <a href="dashboard.html"   class="sidebar-link"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"      class="sidebar-link"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"  class="sidebar-link active"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="ai-assistant.html"class="sidebar-link"><i class="ph ph-robot"></i>AI Safety Assistant</a>
+      <a href="safety-tips.html" class="sidebar-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos"><i class="ph-bold ph-phone-call"></i>Emergency SOS</a>
+    </div>
+  </aside>
+
+  <main class="main-content" role="main">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="dashboard.html">Dashboard</a><span class="sep">›</span>
+      <span class="current">My Reports</span>
+    </nav>
+    <div class="flex-between mb-6">
+      <div>
+        <h1 class="page-title" style="margin-bottom:0">My Reports</h1>
+        <p class="text-muted text-sm" id="report-count">Loading…</p>
+      </div>
+      <a href="report.html" class="btn btn-primary"><i class="ph-bold ph-file-plus"></i> New Report</a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-6">
+      <div style="display:flex;gap:var(--space-4);flex-wrap:wrap;align-items:flex-end">
+        <div style="flex:1;min-width:220px">
+          <div class="search-bar">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Search by Case ID, type, location…" aria-label="Search reports" />
+          </div>
+        </div>
+        <div class="form-group" style="min-width:150px">
+          <label class="form-label text-xs" for="filter-status">Status</label>
+          <select class="form-control" id="filter-status">
+            <option value="">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="submitted">Submitted</option>
+            <option value="under_review">Under Review</option>
+            <option value="assigned">Assigned</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        <div class="form-group" style="min-width:150px">
+          <label class="form-label text-xs" for="filter-type">Incident Type</label>
+          <select class="form-control" id="filter-type">
+            <option value="">All Types</option>
+          </select>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="clear-filters-btn"><i class="ph ph-x"></i> Clear</button>
+      </div>
+    </div>
+
+    <!-- View toggle -->
+    <div class="flex-between mb-4">
+      <div style="display:flex;gap:var(--space-2)">
+        <button class="btn btn-primary btn-sm" id="view-card" aria-pressed="true"><i class="ph ph-squares-four"></i> Cards</button>
+        <button class="btn btn-ghost btn-sm" id="view-table" aria-pressed="false"><i class="ph ph-table"></i> Table</button>
+      </div>
+    </div>
+
+    <!-- Card view -->
+    <div id="cards-view">
+      <div id="reports-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:var(--space-5)">
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+        <div class="skeleton skeleton-card"></div>
+      </div>
+    </div>
+
+    <!-- Table view -->
+    <div id="table-view" class="hidden">
+      <div class="table-wrapper">
+        <table aria-label="Reports table">
+          <thead>
+            <tr>
+              <th>Case ID</th><th>Type</th><th>Status</th><th>Risk</th><th>Date</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="reports-table-body">
+            <tr><td colspan="6" style="text-align:center;padding:var(--space-8)">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination" role="navigation" aria-label="Pagination"></div>
+
+  </main>
+</div>
+
+<!-- View Report Modal -->
+<div class="modal-overlay" id="view-modal" role="dialog" aria-modal="true" aria-labelledby="view-modal-title">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="view-modal-title">Report Details</h3>
+      <button class="modal-close" onclick="Utils.closeModal('view-modal')" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="view-modal-body">Loading…</div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Utils.closeModal('view-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAuth()) return;
+  Utils.initSidebar();
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  });
+
+  // Populate type filter
+  const typeFilter = document.getElementById('filter-type');
+  Config.INCIDENT_TYPES.forEach((t) => {
+    typeFilter.innerHTML += `<option value="${Utils.escapeHtml(t)}">${Utils.escapeHtml(t)}</option>`;
+  });
+
+  let currentPage = 1;
+  const pageSize  = Config.DEFAULT_PAGE_SIZE;
+  let allReports  = [];
+
+  const fetchReports = async (page = 1) => {
+    const status = document.getElementById('filter-status').value;
+    const type   = document.getElementById('filter-type').value;
+    const search = document.getElementById('search-input').value.trim();
+    const params = new URLSearchParams({ page, limit: pageSize });
+    if (status) params.append('status', status);
+    if (type)   params.append('incident_type', type);
+    if (search) params.append('search', search);
+
+    try {
+      const res = await Api.get(`/reports?${params}`);
+      allReports = res.data?.list || [];
+      const total = res.data?.total || 0;
+      const totalPages = Math.ceil(total / pageSize);
+
+      document.getElementById('report-count').textContent = `${total} report${total !== 1 ? 's' : ''} found`;
+      renderCards(allReports);
+      renderTable(allReports);
+      Utils.renderPagination(document.getElementById('pagination'), page, totalPages, (p) => {
+        currentPage = p;
+        fetchReports(p);
+      });
+    } catch (err) {
+      Utils.toastError('Failed to load reports.');
+    }
+  };
+
+  const renderCards = (reports) => {
+    const grid = document.getElementById('reports-grid');
+    if (!reports.length) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">📄</div>
+          <h3>No Reports Found</h3>
+          <p>You haven't submitted any reports yet.</p>
+          <a href="report.html" class="btn btn-primary mt-4">Report Incident</a>
+        </div>`;
+      return;
+    }
+    grid.innerHTML = reports.map((r) => `
+      <div class="report-card">
+        <div class="report-card-header">
+          <span class="report-case-id">${Utils.escapeHtml(r.case_id || 'DRAFT')}</span>
+          ${Utils.statusChip(r.status)}
+        </div>
+        <div class="report-card-title">${Utils.escapeHtml(r.incident_type || 'Incident')}</div>
+        <div class="report-card-meta">
+          <span><i class="ph ph-calendar" aria-hidden="true"></i> ${Utils.formatDate(r.incident_date || r.created_at)}</span>
+          ${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : ''}
+          ${r.is_anonymous ? '<span class="badge badge-gray">Anonymous</span>' : ''}
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button class="btn btn-outline btn-sm" onclick="viewReport('${r.id}')"><i class="ph ph-eye"></i> View</button>
+          ${r.status === 'draft' ? `<button class="btn btn-ghost btn-sm" onclick="deleteReport('${r.id}','${Utils.escapeHtml(r.case_id||'')}')"><i class="ph ph-trash"></i></button>` : ''}
+        </div>
+      </div>`).join('');
+  };
+
+  const renderTable = (reports) => {
+    const tbody = document.getElementById('reports-table-body');
+    if (!reports.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:var(--space-8);color:var(--color-text-muted)">No reports found.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = reports.map((r) => `
+      <tr>
+        <td><span style="font-family:monospace;font-size:0.8rem">${Utils.escapeHtml(r.case_id||'—')}</span></td>
+        <td>${Utils.escapeHtml(r.incident_type||'—')}</td>
+        <td>${Utils.statusChip(r.status)}</td>
+        <td>${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : '—'}</td>
+        <td>${Utils.formatDate(r.created_at)}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="viewReport('${r.id}')"><i class="ph ph-eye"></i></button>
+          ${r.status === 'draft' ? `<button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="deleteReport('${r.id}','${Utils.escapeHtml(r.case_id||'')}')"><i class="ph ph-trash"></i></button>` : ''}
+        </td>
+      </tr>`).join('');
+  };
+
+  // View modal
+  window.viewReport = async (id) => {
+    Utils.openModal('view-modal');
+    const body = document.getElementById('view-modal-body');
+    body.innerHTML = '<div class="flex-center" style="padding:var(--space-10)"><div class="spinner"></div></div>';
+    try {
+      const res = await Api.get(`/reports/${id}`);
+      const r   = res.data?.report;
+      if (!r) throw new Error('Report not found.');
+      body.innerHTML = `
+        <div class="flex-between mb-4">
+          <span class="report-case-id" style="font-size:1rem">${Utils.escapeHtml(r.case_id||'DRAFT')}</span>
+          ${Utils.statusChip(r.status)}
+        </div>
+        <div class="grid-2 gap-4 mb-4">
+          <div><div class="text-xs text-muted">Incident Type</div><div class="font-semibold">${Utils.escapeHtml(r.incident_type||'—')}</div></div>
+          <div><div class="text-xs text-muted">Victim Type</div><div class="font-semibold">${Utils.escapeHtml(r.victim_type||'—')}</div></div>
+          <div><div class="text-xs text-muted">Incident Date</div><div class="font-semibold">${Utils.formatDate(r.incident_date)}</div></div>
+          <div><div class="text-xs text-muted">Priority</div><div class="font-semibold">${Utils.capitalize(r.priority||'—')}</div></div>
+        </div>
+        <div class="mb-4"><div class="text-xs text-muted mb-1">Description</div>
+        <p class="text-sm" style="background:var(--color-gray-50);padding:var(--space-4);border-radius:var(--radius-lg)">${Utils.escapeHtml(r.description||'—')}</p></div>
+        ${r.location_name ? `<div><div class="text-xs text-muted">Location</div><div class="font-semibold">📍 ${Utils.escapeHtml(r.location_name)}</div></div>` : ''}
+        ${r.ai_risk_level ? `<div class="mt-4">AI Risk Assessment: ${Utils.riskBadge(r.ai_risk_level)}</div>` : ''}
+        <div class="mt-4 text-xs text-muted">Submitted: ${Utils.formatDateTime(r.created_at)}</div>`;
+    } catch (err) {
+      body.innerHTML = `<p class="text-center text-muted">Failed to load report details.</p>`;
+    }
+  };
+
+  // Delete draft
+  window.deleteReport = async (id, caseId) => {
+    if (!await Utils.confirm(`Delete draft ${caseId || 'report'}? This cannot be undone.`, 'Delete Draft')) return;
+    try {
+      await Api.delete(`/reports/${id}`);
+      Utils.toastSuccess('Draft deleted.');
+      fetchReports(currentPage);
+    } catch (err) {
+      Utils.toastError(err.message || 'Delete failed.');
+    }
+  };
+
+  // View toggle
+  document.getElementById('view-card').addEventListener('click', () => {
+    Utils.show(document.getElementById('cards-view'));
+    Utils.hide(document.getElementById('table-view'));
+    document.getElementById('view-card').className = 'btn btn-primary btn-sm';
+    document.getElementById('view-table').className = 'btn btn-ghost btn-sm';
+  });
+  document.getElementById('view-table').addEventListener('click', () => {
+    Utils.hide(document.getElementById('cards-view'));
+    Utils.show(document.getElementById('table-view'));
+    document.getElementById('view-table').className = 'btn btn-primary btn-sm';
+    document.getElementById('view-card').className = 'btn btn-ghost btn-sm';
+  });
+
+  // Filter listeners
+  let debounce;
+  document.getElementById('search-input').addEventListener('input', () => {
+    clearTimeout(debounce); debounce = setTimeout(() => fetchReports(1), 400);
+  });
+  document.getElementById('filter-status').addEventListener('change', () => fetchReports(1));
+  document.getElementById('filter-type').addEventListener('change',   () => fetchReports(1));
+  document.getElementById('clear-filters-btn').addEventListener('click', () => {
+    document.getElementById('search-input').value = '';
+    document.getElementById('filter-status').value = '';
+    document.getElementById('filter-type').value = '';
+    fetchReports(1);
+  });
+
+  await fetchReports();
+});
+</script>
+</body>
+</html>

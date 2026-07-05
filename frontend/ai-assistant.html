@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI Safety Assistant – SurakshaAI" />
+  <meta name="robots" content="noindex" />
+  <title>AI Safety Assistant – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- NAVBAR (same sidebar layout) -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm"><i class="ph-bold ph-phone"></i> SOS</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div><div class="sidebar-logo-text">SurakshaAI</div><div class="sidebar-logo-sub">Safety Portal</div></div>
+    </div>
+    <div class="sidebar-section">
+      <a href="dashboard.html"   class="sidebar-link"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"      class="sidebar-link"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"  class="sidebar-link"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="ai-assistant.html"class="sidebar-link active"><i class="ph ph-robot"></i>AI Safety Assistant</a>
+      <a href="safety-tips.html" class="sidebar-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos"><i class="ph-bold ph-phone-call"></i>Emergency SOS</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content" style="padding:var(--space-6);display:flex;flex-direction:column;" role="main">
+    <div class="breadcrumb">
+      <a href="dashboard.html">Dashboard</a>
+      <span class="sep">›</span>
+      <span class="current">AI Safety Assistant</span>
+    </div>
+
+    <!-- DISCLAIMER BANNER -->
+    <div class="alert alert-info mb-4" role="note">
+      <i class="ph ph-info" aria-hidden="true"></i>
+      <div>
+        <strong>Privacy Notice:</strong> This AI assistant is for safety guidance only.
+        For immediate danger, call <a href="tel:112" style="color:inherit;font-weight:700">112</a> immediately.
+        Conversations are stored securely and only visible to you.
+      </div>
+    </div>
+
+    <!-- Emergency banner (hidden by default, shown when AI detects emergency) -->
+    <div class="ai-emergency-banner hidden" id="emergency-banner" role="alert" aria-live="assertive">
+      <div style="font-size:2rem">🚨</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:1rem;margin-bottom:4px">EMERGENCY DETECTED</div>
+        <div id="emergency-reason" style="font-size:0.85rem;opacity:0.9"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <a href="tel:112"  class="btn btn-sm" style="background:white;color:#b91c1c;font-weight:700"><i class="ph ph-phone"></i> Police 112</a>
+          <a href="tel:181"  class="btn btn-sm" style="background:white;color:#b91c1c;font-weight:700"><i class="ph ph-phone"></i> Women 181</a>
+          <a href="tel:1098" class="btn btn-sm" style="background:white;color:#b91c1c;font-weight:700"><i class="ph ph-phone"></i> Child 1098</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-layout" style="flex:1;min-height:0">
+
+      <!-- Chat history sidebar -->
+      <div class="chat-sidebar-panel">
+        <div class="chat-sidebar-header">
+          <h3 style="font-weight:700;font-size:var(--font-size-base)">Chat History</h3>
+          <button class="btn btn-outline btn-sm" id="new-chat-btn">
+            <i class="ph-bold ph-plus"></i> New Chat
+          </button>
+        </div>
+        <div class="chat-history-list" id="chat-history-list">
+          <p class="text-muted text-sm" style="padding:var(--space-4);text-align:center">Loading…</p>
+        </div>
+      </div>
+
+      <!-- Main chat area -->
+      <div class="chat-main">
+        <!-- Chat header -->
+        <div class="chat-header">
+          <div class="ai-avatar" aria-hidden="true"><i class="ph-bold ph-robot"></i></div>
+          <div>
+            <div style="font-weight:700">SurakshaAI Safety Assistant</div>
+            <div class="ai-status">Online — Available 24×7</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:var(--space-3)">
+            <span id="risk-badge-display"></span>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="chat-messages" id="chat-messages" role="log" aria-label="Conversation" aria-live="polite">
+          <!-- Welcome message -->
+          <div class="msg-row">
+            <div class="msg-avatar ai"><i class="ph-bold ph-robot" style="font-size:0.8rem"></i></div>
+            <div>
+              <div class="msg-bubble ai">
+                🙏 नमस्ते! मैं <strong>SurakshaAI</strong> हूँ — आपका सुरक्षा सहायक।<br><br>
+                कृपया अपनी स्थिति या समस्या बताएं। मैं आपकी मदद करने के लिए यहाँ हूँ।<br><br>
+                <em style="opacity:0.7;font-size:0.85em">(Hello! I am SurakshaAI, your safety assistant. Please describe your situation and I will help you.)</em>
+              </div>
+              <div class="msg-time">Just now</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI result card area -->
+        <div id="ai-result-area" style="padding:0 var(--space-6)"></div>
+
+        <!-- Chat input -->
+        <div class="chat-input-area">
+          <div class="chat-input-wrap" role="form" aria-label="Send message">
+            <textarea
+              id="chat-input"
+              placeholder="अपनी समस्या बताएं… (Describe your situation in Hindi or English)"
+              rows="1"
+              aria-label="Message input"
+              aria-multiline="true"
+              maxlength="1500"
+            ></textarea>
+            <button class="chat-send-btn" id="send-btn" aria-label="Send message" title="Send">
+              <i class="ph-bold ph-paper-plane-tilt"></i>
+            </button>
+          </div>
+          <p class="ai-disclaimer">
+            SurakshaAI may make mistakes. In immediate danger, call 112 directly.
+            Not a substitute for professional help.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  Utils.initSidebar();
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  });
+
+  // ─── State ─────────────────────────────────────────────────────
+  let sessionId       = crypto.randomUUID();
+  let phase           = 1; // 1 = waiting for follow-up answer, 2 = complete
+  let originalMessage = '';
+  let followUpQuestion= '';
+  const userId        = Auth.isLoggedIn() ? Auth.getUser()?.id : null;
+
+  const messagesContainer = document.getElementById('chat-messages');
+  const chatInput         = document.getElementById('chat-input');
+  const sendBtn           = document.getElementById('send-btn');
+  const resultArea        = document.getElementById('ai-result-area');
+  const emergencyBanner   = document.getElementById('emergency-banner');
+
+  // ─── Load history ───────────────────────────────────────────────
+  const loadHistory = async () => {
+    const historyEl = document.getElementById('chat-history-list');
+    if (!Auth.isLoggedIn()) {
+      historyEl.innerHTML = '<p class="text-muted text-sm" style="padding:var(--space-4);text-align:center">Login to save chat history.</p>';
+      return;
+    }
+    try {
+      const res  = await Api.get('/ai/history');
+      const sessions = res.data?.sessions || [];
+      if (!sessions.length) {
+        historyEl.innerHTML = '<p class="text-muted text-sm" style="padding:var(--space-4);text-align:center">No previous sessions.</p>';
+        return;
+      }
+      historyEl.innerHTML = sessions.slice(0, 10).map((s) => `
+        <div class="chat-history-item" data-session="${Utils.escapeHtml(s.sessionId)}">
+          <div style="font-weight:500;font-size:var(--font-size-xs)">Session</div>
+          <div style="font-size:10px;color:var(--color-text-muted)">${Utils.formatDateTime(s.startedAt)}</div>
+        </div>`).join('');
+    } catch { historyEl.innerHTML = '<p class="text-muted text-sm" style="padding:var(--space-4)">Could not load history.</p>'; }
+  };
+  await loadHistory();
+
+  // ─── Append message bubble ──────────────────────────────────────
+  const appendMsg = (role, html) => {
+    const isUser = role === 'user';
+    const el = document.createElement('div');
+    el.className = `msg-row ${isUser ? 'user' : ''}`;
+    el.innerHTML = `
+      ${!isUser ? `<div class="msg-avatar ai" aria-hidden="true"><i class="ph-bold ph-robot" style="font-size:0.8rem"></i></div>` : ''}
+      <div>
+        <div class="msg-bubble ${role}">${html}</div>
+        <div class="msg-time">${Utils.timeAgo(new Date().toISOString())}</div>
+      </div>
+      ${isUser ? `<div class="msg-avatar user" aria-hidden="true"><i class="ph-bold ph-user" style="font-size:0.8rem"></i></div>` : ''}
+    `;
+    messagesContainer.appendChild(el);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    return el;
+  };
+
+  // Typing indicator
+  const showTyping = () => {
+    const el = document.createElement('div');
+    el.className = 'msg-row';
+    el.id = 'typing-indicator';
+    el.innerHTML = `
+      <div class="msg-avatar ai" aria-hidden="true"><i class="ph-bold ph-robot" style="font-size:0.8rem"></i></div>
+      <div class="msg-bubble ai">
+        <div class="typing-indicator" aria-label="AI is thinking">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>`;
+    messagesContainer.appendChild(el);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  };
+  const hideTyping = () => document.getElementById('typing-indicator')?.remove();
+
+  // ─── Render AI result ────────────────────────────────────────────
+  const renderResult = (aiData) => {
+    resultArea.innerHTML = '';
+
+    // Risk badge
+    const riskEl = document.getElementById('risk-badge-display');
+    if (riskEl && aiData.riskLevel) {
+      riskEl.innerHTML = Utils.riskBadge(aiData.riskLevel.toLowerCase());
+    }
+
+    if (aiData.emergencyDetected) {
+      Utils.show(emergencyBanner);
+      document.getElementById('emergency-reason').textContent = aiData.emergencyReason || 'Immediate danger detected.';
+    }
+
+    // Only show full card in phase 2
+    if (phase === 2 && (aiData.summary || aiData.recommendedAction || aiData.safetyAdvice)) {
+      resultArea.innerHTML = `
+        <div class="ai-result-card mt-4">
+          ${aiData.summary ? `<h4 style="margin-bottom:var(--space-3)">📋 Summary</h4><p class="text-sm" style="margin-bottom:var(--space-4)">${Utils.escapeHtml(aiData.summary)}</p>` : ''}
+          ${aiData.recommendedAction ? `<div class="alert alert-warning mb-3"><i class="ph ph-warning" aria-hidden="true"></i><div><strong>Recommended Action:</strong><br>${Utils.escapeHtml(aiData.recommendedAction)}</div></div>` : ''}
+          ${aiData.safetyAdvice ? `<div class="alert alert-info mb-4"><i class="ph ph-lightbulb" aria-hidden="true"></i><div><strong>Safety Advice:</strong><br>${Utils.escapeHtml(aiData.safetyAdvice)}</div></div>` : ''}
+          ${aiData.recommendedHelplines?.length ? `
+            <h4 style="margin-bottom:var(--space-3)">📞 Helplines</h4>
+            <div class="ai-helplines">
+              ${aiData.recommendedHelplines.map((h) => `
+                <div class="helpline-card">
+                  <div class="helpline-number">${Utils.escapeHtml(h.number)}</div>
+                  <div class="helpline-name">${Utils.escapeHtml(h.name)}</div>
+                  <a href="tel:${Utils.escapeHtml(h.number)}" class="helpline-call"><i class="ph ph-phone" aria-hidden="true"></i> Call Now</a>
+                </div>`).join('')}
+            </div>` : ''}
+        </div>`;
+    }
+  };
+
+  // ─── Send message ────────────────────────────────────────────────
+  const sendMessage = async () => {
+    const text = chatInput.value.trim();
+    if (!text || sendBtn.disabled) return;
+
+    chatInput.value = '';
+    chatInput.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    // Show user message
+    appendMsg('user', Utils.escapeHtml(text));
+    showTyping();
+
+    try {
+      let aiData;
+      if (phase === 1) {
+        // Phase 1: initial message
+        originalMessage = text;
+        const res = await Api.post('/ai/start', { userMessage: text, sessionId }, false);
+        aiData = res.data;
+        hideTyping();
+        followUpQuestion = aiData.followUpQuestion || '';
+
+        // Show follow-up question as AI message
+        appendMsg('ai', `<div>${Utils.escapeHtml(followUpQuestion)}</div>`);
+        renderResult(aiData);
+        phase = 2;
+
+      } else {
+        // Phase 2: follow-up answer
+        const res = await Api.post('/ai/respond', {
+          sessionId, originalMessage, followUpQuestion, followUpAnswer: text,
+        }, false);
+        aiData = res.data;
+        hideTyping();
+        // Show AI summary/advice as message
+        const summaryText = aiData.safetyAdvice || aiData.summary || 'यहाँ आपकी स्थिति का विश्लेषण है।';
+        appendMsg('ai', Utils.escapeHtml(summaryText));
+        renderResult(aiData);
+
+        // Reset for new conversation
+        phase = 1;
+        sessionId = crypto.randomUUID();
+        originalMessage = '';
+        followUpQuestion = '';
+        await loadHistory();
+      }
+    } catch (err) {
+      hideTyping();
+      appendMsg('ai', '⚠️ मुझे खेद है, एक तकनीकी समस्या आई। कृपया दोबारा कोशिश करें।<br><em>(Sorry, a technical issue occurred. Please try again.)</em>');
+      Utils.toastError(err.message || 'AI service error. Please retry.');
+    } finally {
+      sendBtn.disabled = false;
+      chatInput.focus();
+    }
+  };
+
+  // Send on button click
+  sendBtn.addEventListener('click', sendMessage);
+
+  // Send on Enter (Shift+Enter = new line)
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // Auto-resize textarea
+  chatInput.addEventListener('input', () => {
+    chatInput.style.height = 'auto';
+    chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+  });
+
+  // New chat
+  document.getElementById('new-chat-btn')?.addEventListener('click', () => {
+    sessionId       = crypto.randomUUID();
+    phase           = 1;
+    originalMessage = '';
+    followUpQuestion= '';
+    messagesContainer.innerHTML = '';
+    resultArea.innerHTML = '';
+    Utils.hide(emergencyBanner);
+    const riskEl = document.getElementById('risk-badge-display');
+    if (riskEl) riskEl.innerHTML = '';
+    appendMsg('ai', '🙏 New session started. Please describe your situation.');
+    chatInput.focus();
+  });
+});
+</script>
+</body>
+</html>

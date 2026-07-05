@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+<nav class="navbar" role="navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm"><i class="ph-bold ph-phone"></i> SOS</a>
+    <button class="hamburger" id="hamburger" aria-label="Open menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+  <aside class="sidebar" id="sidebar" role="navigation">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon"><i class="ph-bold ph-shield-star"></i></div>
+      <div><div class="sidebar-logo-text">SurakshaAI</div><div class="sidebar-logo-sub">Safety Portal</div></div>
+    </div>
+    <div class="sidebar-section">
+      <a href="dashboard.html"    class="sidebar-link"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"       class="sidebar-link"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"   class="sidebar-link"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="ai-assistant.html" class="sidebar-link"><i class="ph ph-robot"></i>AI Safety Assistant</a>
+      <a href="notifications.html"class="sidebar-link active"><i class="ph ph-bell"></i>Notifications</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos"><i class="ph-bold ph-phone-call"></i>Emergency SOS</a>
+    </div>
+  </aside>
+  <main class="main-content" role="main">
+    <nav class="breadcrumb"><a href="dashboard.html">Dashboard</a><span class="sep">›</span><span class="current">Notifications</span></nav>
+    <div class="flex-between mb-6">
+      <div>
+        <h1 class="page-title" style="margin-bottom:0">Notifications</h1>
+        <p class="text-muted text-sm" id="notif-meta">Loading…</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="mark-all-read-btn"><i class="ph ph-checks"></i> Mark All Read</button>
+    </div>
+    <div id="notif-container">
+      <div class="skeleton skeleton-card mb-3"></div>
+      <div class="skeleton skeleton-card mb-3"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAuth()) return;
+  Utils.initSidebar();
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebar-overlay').classList.toggle('open');
+  });
+
+  let page = 1;
+  const ICONS = { alert:'🚨', report_update:'📄', system_message:'ℹ️' };
+
+  const load = async (p = 1) => {
+    try {
+      const res  = await Api.get(`/notifications?page=${p}&limit=15`);
+      const list = res.data?.list || [];
+      const total= res.data?.total || 0;
+      document.getElementById('notif-meta').textContent = `${total} notification${total!==1?'s':''}`;
+      const container = document.getElementById('notif-container');
+      if (!list.length) {
+        container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔔</div><h3>No Notifications</h3><p>You're all caught up!</p></div>`;
+        return;
+      }
+      container.innerHTML = list.map((n) => `
+        <div class="notif-item ${!n.is_read?'unread':''}" id="notif-${n.id}" data-id="${n.id}">
+          <div class="notif-icon" style="background:rgba(26,86,219,0.08);font-size:1.3rem">${ICONS[n.type]||'📢'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:${n.is_read?400:600};font-size:var(--font-size-sm)">${Utils.escapeHtml(n.title)}</div>
+            <div style="font-size:var(--font-size-sm);color:var(--color-text-muted);margin-top:2px">${Utils.escapeHtml(n.message||'')}</div>
+            <div class="notif-time">${Utils.timeAgo(n.created_at)}</div>
+          </div>
+          ${!n.is_read?'<div class="notif-unread-dot" aria-label="Unread"></div>':''}
+          <button class="btn btn-ghost btn-sm del-btn" data-id="${n.id}" aria-label="Delete notification"><i class="ph ph-trash"></i></button>
+        </div>`).join('');
+
+      // Mark as read on click
+      container.querySelectorAll('.notif-item').forEach((el) => {
+        el.addEventListener('click', async (e) => {
+          if (e.target.closest('.del-btn')) return;
+          const id = el.dataset.id;
+          if (!el.classList.contains('unread')) return;
+          try { await Api.put(`/notifications/${id}/read`, {}); el.classList.remove('unread'); el.querySelector('.notif-unread-dot')?.remove(); } catch {}
+        });
+      });
+
+      // Delete
+      container.querySelectorAll('.del-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = btn.dataset.id;
+          if (!await Utils.confirm('Delete this notification?')) return;
+          try { await Api.delete(`/notifications/${id}`); btn.closest('.notif-item').remove(); Utils.toastSuccess('Notification deleted.'); } catch {}
+        });
+      });
+
+      Utils.renderPagination(document.getElementById('pagination'), p, Math.ceil(total/15), (np) => { page=np; load(np); });
+    } catch { Utils.toastError('Failed to load notifications.'); }
+  };
+
+  document.getElementById('mark-all-read-btn').addEventListener('click', async () => {
+    try {
+      await Api.put('/notifications/read-all', {});
+      Utils.toastSuccess('All notifications marked as read.');
+      load(page);
+    } catch (err) { Utils.toastError(err.message); }
+  });
+
+  await load();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg" />
+  <link rel="stylesheet" href="../assets/css/variables.css" />
+  <link rel="stylesheet" href="../assets/css/base.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <link rel="stylesheet" href="../assets/css/pages.css" />
+  <link rel="stylesheet" href="../assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+<main class="auth-page" style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 50%,#312e81 100%)" role="main">
+  <div class="auth-card animate-slide-up" role="region" aria-labelledby="admin-login-title">
+    <div class="auth-logo">
+      <div class="auth-logo-icon" style="background:linear-gradient(135deg,#312e81,var(--color-accent))"><i class="ph-bold ph-shield-star"></i></div>
+      <div class="auth-logo-text">
+        <h2>SurakshaAI</h2><p>Administration Panel</p>
+      </div>
+    </div>
+    <div class="alert alert-warning mb-4" role="note">
+      <i class="ph ph-lock-key-open" aria-hidden="true"></i>
+      <div><strong>Restricted Access</strong><br><small>This area is for authorized administrators only.</small></div>
+    </div>
+    <h1 class="auth-title" id="admin-login-title">Admin Login</h1>
+    <p class="auth-subtitle">Enter your admin email to receive a secure OTP.</p>
+
+    <div id="admin-step-email">
+      <form id="admin-email-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="admin-email">Admin Email <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="ph ph-envelope input-icon"></i>
+            <input type="email" class="form-control" id="admin-email" name="email" placeholder="admin@suraksha.gov.in" autocomplete="email" required />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-accent btn-full mt-6" id="admin-send-otp-btn">
+          <i class="ph-bold ph-paper-plane-right"></i><span class="btn-text">Send Admin OTP</span>
+        </button>
+      </form>
+    </div>
+
+    <div id="admin-step-otp" class="hidden">
+      <p class="auth-subtitle">OTP sent to <strong id="admin-email-display"></strong></p>
+      <form id="admin-otp-form" novalidate>
+        <div class="form-group">
+          <label class="form-label text-center" for="admin-otp-1">Enter 6-digit OTP</label>
+          <div class="otp-inputs">
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-1" autocomplete="one-time-code" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-2" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-3" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-4" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-5" />
+            <input type="text" inputmode="numeric" maxlength="1" class="otp-input" id="admin-otp-6" />
+          </div>
+          <div class="otp-timer">Expires in <span id="admin-countdown">5:00</span></div>
+        </div>
+        <button type="submit" class="btn btn-accent btn-full mt-6" id="admin-verify-btn">
+          <i class="ph-bold ph-check-circle"></i><span class="btn-text">Verify & Access Panel</span>
+        </button>
+      </form>
+    </div>
+    <p class="text-center text-sm mt-4"><a href="../index.html" style="color:var(--color-primary)"><i class="ph ph-arrow-left"></i> Back to Home</a></p>
+  </div>
+</main>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/utils.js"></script>
+<script src="../assets/js/validator.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (Auth.isAdmin()) { window.location.href = 'dashboard.html'; return; }
+  let email = '';
+  let timer = null;
+
+  const stepEmail = document.getElementById('admin-step-email');
+  const stepOtp   = document.getElementById('admin-step-otp');
+  const otpInputs = document.querySelectorAll('.otp-input');
+
+  document.getElementById('admin-email-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { valid } = Validator.validate(e.target, Validator.schemas.login);
+    if (!valid) return;
+    const btn = document.getElementById('admin-send-otp-btn');
+    Utils.setButtonLoading(btn, true);
+    try {
+      email = document.getElementById('admin-email').value.trim();
+      await Auth.sendOtp(email);
+      document.getElementById('admin-email-display').textContent = email;
+      Utils.hide(stepEmail); Utils.show(stepOtp);
+      startTimer();
+      otpInputs[0].focus();
+      Utils.toastSuccess('OTP sent to admin email.');
+    } catch (err) {
+      Utils.toastError(err.message || 'Failed to send OTP.');
+    } finally { Utils.setButtonLoading(btn, false); }
+  });
+
+  document.getElementById('admin-otp-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const otp = Array.from(otpInputs).map((i) => i.value).join('');
+    if (!/^\d{6}$/.test(otp)) { Utils.toastError('Enter the complete 6-digit OTP.'); return; }
+    const btn = document.getElementById('admin-verify-btn');
+    Utils.setButtonLoading(btn, true);
+    try {
+      const user = await Auth.verifyOtp(email, otp);
+      if (!Auth.isAdmin()) {
+        Api.clearTokens();
+        Utils.toastError('Access denied. This account does not have admin privileges.');
+        Utils.setButtonLoading(btn, false);
+        return;
+      }
+      clearInterval(timer);
+      Utils.toastSuccess('Admin access granted.', 'Welcome');
+      setTimeout(() => window.location.href = 'dashboard.html', 800);
+    } catch (err) {
+      Utils.toastError(err.message || 'Invalid OTP.');
+      Utils.setButtonLoading(btn, false);
+    }
+  });
+
+  otpInputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g,'');
+      if (e.target.value && idx < otpInputs.length-1) otpInputs[idx+1].focus();
+      if (Array.from(otpInputs).every((i)=>i.value)) document.getElementById('admin-otp-form').dispatchEvent(new Event('submit'));
+    });
+    input.addEventListener('keydown', (e) => { if (e.key==='Backspace' && !input.value && idx>0) otpInputs[idx-1].focus(); });
+  });
+
+  const startTimer = () => {
+    let s = 300;
+    clearInterval(timer);
+    timer = setInterval(() => {
+      s--;
+      const m = Math.floor(s/60);
+      document.getElementById('admin-countdown').textContent = `${m}:${String(s%60).padStart(2,'0')}`;
+      if (s <= 0) { clearInterval(timer); document.getElementById('admin-countdown').textContent = 'Expired'; }
+    }, 1000);
+  };
+});
+</script>
+</body>
+</html>

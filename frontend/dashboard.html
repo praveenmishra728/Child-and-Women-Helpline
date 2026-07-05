@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Your personal safety dashboard on SurakshaAI." />
+  <meta name="robots" content="noindex" />
+  <title>Dashboard – SurakshaAI</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg" />
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/pages.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+
+<div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════════════════ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="navbar-brand">
+    <div class="navbar-logo" aria-hidden="true"><i class="ph-bold ph-shield-star"></i></div>
+    <span class="navbar-name">Suraksha<span>AI</span></span>
+  </a>
+  <div class="navbar-actions" style="margin-left:auto">
+    <a href="emergency.html" class="btn btn-danger btn-sm">
+      <i class="ph-bold ph-phone"></i> SOS
+    </a>
+    <button class="notif-btn" id="nav-notif-btn" aria-label="Notifications">
+      <i class="ph ph-bell"></i>
+      <span class="notif-badge hidden" id="notif-badge"></span>
+    </button>
+    <div class="dropdown">
+      <button class="user-avatar-btn" data-dropdown-trigger>
+        <div class="user-avatar" id="nav-user-avatar">U</div>
+        <span class="user-name" id="nav-user-name">User</span>
+        <i class="ph ph-caret-down" style="font-size:0.75rem;color:var(--color-gray-400)"></i>
+      </button>
+      <div class="dropdown-menu">
+        <a href="profile.html"      class="dropdown-item"><i class="ph ph-user"></i>Profile</a>
+        <a href="notifications.html"class="dropdown-item"><i class="ph ph-bell"></i>Notifications</a>
+        <div class="dropdown-divider"></div>
+        <button class="dropdown-item danger" id="logout-btn"><i class="ph ph-sign-out"></i>Logout</button>
+      </div>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     LAYOUT
+══════════════════════════════════════════════════════════════ -->
+<div class="dashboard-layout" style="padding-top:var(--navbar-height)">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar navigation">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon" aria-hidden="true"><i class="ph-bold ph-shield-star"></i></div>
+      <div>
+        <div class="sidebar-logo-text">SurakshaAI</div>
+        <div class="sidebar-logo-sub">Safety Portal</div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Main</div>
+      <a href="dashboard.html"     class="sidebar-link active"><i class="ph ph-squares-four"></i>Dashboard</a>
+      <a href="report.html"        class="sidebar-link"><i class="ph ph-file-plus"></i>Report Incident</a>
+      <a href="my-reports.html"    class="sidebar-link"><i class="ph ph-clipboard-text"></i>My Reports</a>
+      <a href="ai-assistant.html"  class="sidebar-link"><i class="ph ph-robot"></i>AI Safety Assistant</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Resources</div>
+      <a href="safety-tips.html"   class="sidebar-link"><i class="ph ph-lightbulb"></i>Safety Tips</a>
+      <a href="notifications.html" class="sidebar-link"><i class="ph ph-bell"></i>Notifications <span class="badge badge-danger" id="sidebar-notif-count" style="display:none">0</span></a>
+      <a href="profile.html"       class="sidebar-link"><i class="ph ph-user-circle"></i>Profile</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Support</div>
+      <a href="about.html"   class="sidebar-link"><i class="ph ph-info"></i>About</a>
+      <a href="contact.html" class="sidebar-link"><i class="ph ph-envelope"></i>Contact Us</a>
+    </div>
+    <div class="sidebar-emergency">
+      <a href="emergency.html" class="sidebar-sos">
+        <i class="ph-bold ph-phone-call"></i>
+        Emergency SOS
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" id="main-content" role="main">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep" aria-hidden="true">›</span>
+      <span class="current">Dashboard</span>
+    </nav>
+
+    <!-- Welcome Card -->
+    <div class="welcome-card" id="welcome-card" aria-label="Welcome section">
+      <h2>Welcome back, <span id="welcome-name">User</span> 👋</h2>
+      <p>Stay safe and informed. Your safety dashboard is up to date.</p>
+      <div class="welcome-actions">
+        <a href="report.html"       class="btn btn-white"><i class="ph-bold ph-file-plus"></i> Report Incident</a>
+        <a href="ai-assistant.html" class="btn btn-white-outline"><i class="ph-bold ph-robot"></i> AI Assistant</a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid mt-6" role="region" aria-label="Your report statistics">
+      <div class="stat-card">
+        <div class="stat-icon blue"><i class="ph-bold ph-files" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-label">Total Reports</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange"><i class="ph-bold ph-clock" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-label">Pending Review</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><i class="ph-bold ph-check-circle" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-value" id="stat-resolved">—</div>
+          <div class="stat-label">Resolved</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><i class="ph-bold ph-robot" aria-hidden="true"></i></div>
+        <div>
+          <div class="stat-value" id="stat-ai">—</div>
+          <div class="stat-label">AI Sessions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="card mt-6">
+      <div class="card-header">
+        <h3 class="card-title"><i class="ph ph-clipboard-text" aria-hidden="true"></i> Recent Reports</h3>
+        <a href="my-reports.html" class="btn btn-ghost btn-sm">View All</a>
+      </div>
+      <div id="recent-reports-list">
+        <!-- Skeleton -->
+        <div id="reports-skeleton">
+          <div class="skeleton skeleton-line" style="width:90%"></div>
+          <div class="skeleton skeleton-line" style="width:70%"></div>
+          <div class="skeleton skeleton-line" style="width:80%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom row: Quick Actions + Notifications -->
+    <div class="grid-2 mt-6">
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3)">
+          <a href="report.html" class="quick-card">
+            <div class="quick-card-icon" style="background:rgba(26,86,219,0.10)"><i class="ph-bold ph-file-plus" style="color:var(--color-primary)"></i></div>
+            <span class="quick-card-title">New Report</span>
+          </a>
+          <a href="ai-assistant.html" class="quick-card">
+            <div class="quick-card-icon" style="background:rgba(124,58,237,0.10)"><i class="ph-bold ph-robot" style="color:var(--color-accent)"></i></div>
+            <span class="quick-card-title">AI Assistant</span>
+          </a>
+          <a href="emergency.html" class="quick-card">
+            <div class="quick-card-icon" style="background:rgba(220,38,38,0.10)"><i class="ph-bold ph-phone-call" style="color:var(--color-danger)"></i></div>
+            <span class="quick-card-title">Emergency</span>
+          </a>
+          <a href="safety-tips.html" class="quick-card">
+            <div class="quick-card-icon" style="background:rgba(5,150,105,0.10)"><i class="ph-bold ph-lightbulb" style="color:var(--color-success)"></i></div>
+            <span class="quick-card-title">Safety Tips</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent Notifications -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><i class="ph ph-bell" aria-hidden="true"></i> Notifications</h3>
+          <a href="notifications.html" class="btn btn-ghost btn-sm">View All</a>
+        </div>
+        <div id="notif-list">
+          <div id="notif-skeleton">
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line" style="width:75%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/utils.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.requireAuth()) return;
+
+  Auth.populateNavUser();
+  Utils.initDropdowns();
+  Utils.initSidebar();
+
+  // Populate welcome name
+  const user = Auth.getUser();
+  const wName = document.getElementById('welcome-name');
+  if (wName) wName.textContent = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
+
+  // Hamburger for mobile sidebar
+  document.getElementById('hamburger')?.addEventListener('click', () => {
+    document.getElementById('sidebar')?.classList.toggle('open');
+    document.getElementById('sidebar-overlay')?.classList.toggle('open');
+  });
+
+  // Logout
+  document.getElementById('logout-btn')?.addEventListener('click', async () => {
+    if (await Utils.confirm('Are you sure you want to logout?')) await Auth.logout();
+  });
+
+  // Notification bell -> go to page
+  document.getElementById('nav-notif-btn')?.addEventListener('click', () => {
+    window.location.href = 'notifications.html';
+  });
+
+  // Load dashboard stats
+  try {
+    const [reportsRes, aiRes] = await Promise.all([
+      Api.get('/reports'),
+      Api.get('/ai/history'),
+    ]);
+    const reports = reportsRes.data || {};
+    const total   = reports.total || 0;
+    const pending = (reports.list || []).filter((r) => ['submitted','under_review','in_progress'].includes(r.status)).length;
+    const resolved= (reports.list || []).filter((r) => ['resolved','closed'].includes(r.status)).length;
+
+    document.getElementById('stat-total').textContent    = total;
+    document.getElementById('stat-pending').textContent  = pending;
+    document.getElementById('stat-resolved').textContent = resolved;
+    document.getElementById('stat-ai').textContent       = (aiRes.data?.count || 0);
+
+    // Render recent reports
+    const skeleton = document.getElementById('reports-skeleton');
+    if (skeleton) skeleton.remove();
+    const list = (reports.list || []).slice(0, 5);
+    const container = document.getElementById('recent-reports-list');
+    if (!container) return;
+    if (!list.length) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon" aria-hidden="true">📄</div>
+          <h3>No Reports Yet</h3>
+          <p>Submit your first incident report to get started.</p>
+          <a href="report.html" class="btn btn-primary mt-4">Report Incident</a>
+        </div>`;
+      return;
+    }
+    container.innerHTML = list.map((r) => `
+      <div class="report-card" onclick="window.location='my-reports.html'" role="button" tabindex="0"
+           aria-label="Report ${Utils.escapeHtml(r.case_id || '')}">
+        <div class="report-card-header">
+          <span class="report-case-id">${Utils.escapeHtml(r.case_id || 'DRAFT')}</span>
+          ${Utils.statusChip(r.status)}
+        </div>
+        <div class="report-card-title">${Utils.escapeHtml(r.incident_type || 'Incident Report')}</div>
+        <div class="report-card-meta">
+          <span><i class="ph ph-calendar" aria-hidden="true"></i> ${Utils.formatDate(r.created_at)}</span>
+          ${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : ''}
+        </div>
+      </div>`).join('');
+  } catch (err) {
+    Utils.toastError('Failed to load dashboard data. Please refresh.');
+  }
+
+  // Load notifications
+  try {
+    const notifRes = await Api.get('/notifications?limit=3');
+    const notifs   = notifRes.data?.list || [];
+    const nSkeleton = document.getElementById('notif-skeleton');
+    if (nSkeleton) nSkeleton.remove();
+
+    const nContainer = document.getElementById('notif-list');
+    if (!notifs.length) {
+      nContainer.innerHTML = `<p class="text-muted text-sm text-center" style="padding:var(--space-4)">No notifications yet.</p>`;
+      return;
+    }
+    nContainer.innerHTML = notifs.map((n) => `
+      <div class="notif-item ${!n.is_read ? 'unread' : ''}">
+        <div class="notif-icon" style="background:rgba(26,86,219,0.08)">
+          <i class="ph ph-bell" style="color:var(--color-primary)" aria-hidden="true"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:var(--font-size-sm)">${Utils.escapeHtml(n.title)}</div>
+          <div class="notif-time">${Utils.timeAgo(n.created_at)}</div>
+        </div>
+        ${!n.is_read ? '<div class="notif-unread-dot" aria-label="Unread"></div>' : ''}
+      </div>`).join('');
+
+    // Unread badge
+    const unread = notifs.filter((n) => !n.is_read).length;
+    if (unread > 0) {
+      const badge = document.getElementById('notif-badge');
+      if (badge) { badge.textContent = unread; Utils.show(badge); }
+    }
+  } catch { /* silent */ }
+});
+</script>
+</body>
+</html>

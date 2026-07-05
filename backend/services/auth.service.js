@@ -224,7 +224,8 @@ const getProfileById = async (id) => {
  * @param {string} email - User email address
  */
 const initiateOtpFlow = async (email) => {
-  const otp = generate6DigitOtp();
+  // If in Mock Mode (no supabase), use static OTP '123456' for ease of local testing
+  const otp = (!supabase) ? '123456' : generate6DigitOtp();
   const saltRounds = 10;
   const otpHash = await bcrypt.hash(otp, saltRounds);
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes validity

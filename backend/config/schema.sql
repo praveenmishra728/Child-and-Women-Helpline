@@ -297,6 +297,10 @@ CREATE POLICY update_own_profile ON profiles
     USING (auth.uid() = id OR role = 'admin' OR role = 'super_admin')
     WITH CHECK (auth.uid() = id OR role = 'admin' OR role = 'super_admin');
 
+CREATE POLICY insert_profile ON profiles
+    FOR INSERT
+    WITH CHECK (TRUE);
+
 -- 5b. REPORTS POLICIES
 -- Users can read and write their own reports (if not anonymous). Anyone can file a report.
 CREATE POLICY insert_any_report ON reports

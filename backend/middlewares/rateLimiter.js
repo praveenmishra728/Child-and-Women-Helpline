@@ -17,10 +17,10 @@ const apiLimiter = rateLimit({
   }
 });
 
-// Stricter request limiter for OTP auth endpoints (5 requests per 10 minutes)
+// Stricter request limiter for OTP auth endpoints (30 requests per 10 minutes)
 const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res, next) => {

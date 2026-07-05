@@ -138,7 +138,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Redirect if already logged in
-      Auth.redirectIfLoggedIn('/dashboard.html');
+      Auth.redirectIfLoggedIn('dashboard.html');
 
       // ─── State ─────────────────────────────────────────────────────
       let currentEmail = '';
@@ -191,7 +191,7 @@
           const user = await Auth.verifyOtp(currentEmail, otp);
           Utils.toastSuccess(`Welcome, ${user.full_name || 'User'}!`, 'Login Successful');
           clearInterval(otpTimer);
-          const redirect = sessionStorage.getItem('redirect_after_login') || '/dashboard.html';
+          const redirect = sessionStorage.getItem('redirect_after_login') || 'dashboard.html';
           sessionStorage.removeItem('redirect_after_login');
           setTimeout(() => { window.location.href = redirect; }, 800);
         } catch (err) {

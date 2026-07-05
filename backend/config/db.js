@@ -18,10 +18,12 @@ try {
                         (!keyToCheck.startsWith('eyJ') && !keyToCheck.startsWith('sb_') && !keyToCheck.startsWith('ssb_'));
 
   if (!isPlaceholder) {
-    // Initialize Supabase Client using Service Role Key to bypass RLS on the backend server
-    const key = config.supabase.serviceRoleKey || config.supabase.anonKey;
+    // Initialize Supabase Client (prefers Service Role Key if valid JWT to bypass RLS, otherwise falls back to Anon Key)
+    const key = (config.supabase.serviceRoleKey && config.supabase.serviceRoleKey.startsWith('eyJ'))
+      ? config.supabase.serviceRoleKey 
+      : config.supabase.anonKey;
     supabase = createClient(config.supabase.url, key);
-    console.log('[Supabase] Client initialized successfully (using service role bypass).');
+    console.log(`[Supabase] Client initialized successfully (using ${key === config.supabase.serviceRoleKey ? 'service role' : 'anon'} key).`);
   } else {
     console.warn('[Supabase] Warning: Missing or dummy Supabase URL or Key. Using placeholder client (Mock Mode).');
   }

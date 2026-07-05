@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (search) params.append('search', search);
 
     try {
-      const res = await Api.get(`/reports?${params}`);
+      const res = await Api.get(`/reports/my?${params}`);
       allReports = res.data?.list || [];
       const total = res.data?.total || 0;
       const totalPages = Math.ceil(total / pageSize);

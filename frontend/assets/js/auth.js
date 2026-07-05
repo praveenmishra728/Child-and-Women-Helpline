@@ -43,19 +43,19 @@ const Auth = (() => {
   /** Call on every admin-only page. */
   const requireAdmin = () => {
     if (!isLoggedIn()) {
-      window.location.href = '/admin/login.html';
+      window.location.href = 'admin/login.html';
       return false;
     }
     if (!isAdmin()) {
       Utils.toastError('You do not have permission to access this page.');
-      window.location.href = '/dashboard.html';
+      window.location.href = 'dashboard.html';
       return false;
     }
     return true;
   };
 
   /** Redirect logged-in users away from login page */
-  const redirectIfLoggedIn = (to = '/dashboard.html') => {
+  const redirectIfLoggedIn = (to = 'dashboard.html') => {
     if (isLoggedIn()) window.location.href = to;
   };
 
@@ -69,7 +69,8 @@ const Auth = (() => {
   /** Step 2: Verify OTP and store tokens */
   const verifyOtp = async (email, otp) => {
     const data = await Api.post('/auth/verify-otp', { email, otp }, false);
-    const { accessToken, refreshToken, user } = data.data || {};
+    const { token, refreshToken, user } = data.data || {};
+    const accessToken = token;
     if (!accessToken) throw new Error('Authentication failed. No token received.');
     Api.setTokens(accessToken, refreshToken);
     setUser(user);
@@ -83,7 +84,7 @@ const Auth = (() => {
     } catch { /* ignore network errors on logout */ }
     Api.clearTokens();
     localStorage.removeItem(Config.USER_KEY);
-    window.location.href = '/login.html';
+    window.location.href = 'login.html';
   };
 
   /** Populate user info into navbar elements */

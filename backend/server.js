@@ -21,6 +21,7 @@ const authRoutes = require('./routes/auth.routes');
 const reportRoutes = require('./routes/report.routes');
 const aiRoutes = require('./routes/ai.routes');
 const adminRoutes = require('./routes/admin.routes');
+const userRoutes = require('./routes/user.routes');
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/users', userRoutes);
 
 // 9. Handle 404 Undefined Resource Errors
 app.use((req, res, next) => {

@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load dashboard stats
   try {
     const [reportsRes, aiRes] = await Promise.all([
-      Api.get('/reports'),
+      Api.get('/reports/my'),
       Api.get('/ai/history'),
     ]);
     const reports = reportsRes.data || {};

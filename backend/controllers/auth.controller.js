@@ -68,7 +68,8 @@ const verifyOtp = async (req, res, next) => {
         full_name: profile.full_name,
         role: profile.role
       },
-      token: accessToken
+      token: accessToken,
+      refreshToken: refreshToken
     });
   } catch (error) {
     next(error);
@@ -85,6 +86,8 @@ const refreshAccessToken = async (req, res, next) => {
 
     if (req.cookies && req.cookies.refreshToken) {
       refreshToken = req.cookies.refreshToken;
+    } else if (req.body && req.body.refreshToken) {
+      refreshToken = req.body.refreshToken;
     }
 
     if (!refreshToken) {

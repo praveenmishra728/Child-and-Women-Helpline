@@ -33,8 +33,18 @@ router.post(
   (req, res, next) => {
     // Parser wrapper to parse strings in multipart fields
     if (req.body.is_anonymous) req.body.is_anonymous = req.body.is_anonymous === 'true';
-    if (req.body.latitude) req.body.latitude = parseFloat(req.body.latitude);
-    if (req.body.longitude) req.body.longitude = parseFloat(req.body.longitude);
+    
+    if (req.body.latitude === '' || req.body.latitude === 'null' || req.body.latitude === undefined) {
+      req.body.latitude = null;
+    } else if (req.body.latitude) {
+      req.body.latitude = parseFloat(req.body.latitude);
+    }
+    
+    if (req.body.longitude === '' || req.body.longitude === 'null' || req.body.longitude === undefined) {
+      req.body.longitude = null;
+    } else if (req.body.longitude) {
+      req.body.longitude = parseFloat(req.body.longitude);
+    }
     next();
   },
   validate(createReportSchema), 

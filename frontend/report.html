@@ -354,7 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
       await Api.upload('/reports', collectFormData('draft'));
       Utils.toastSuccess('Report saved as draft.', 'Draft Saved');
     } catch (err) {
-      Utils.toastError(err.message || 'Failed to save draft.');
+      let errMsg = err.message || 'Failed to save draft.';
+      if (err.data && err.data.errors && err.data.errors.length > 0) {
+        errMsg = err.data.errors.map(e => e.message).join('\n');
+      }
+      Utils.toastError(errMsg);
     } finally {
       Utils.setButtonLoading(btn, false);
     }
@@ -375,7 +379,11 @@ document.addEventListener('DOMContentLoaded', () => {
       Utils.toastSuccess(`Report ${res.data?.case_id || ''} submitted successfully.`, 'Report Submitted');
       setTimeout(() => window.location.href = 'my-reports.html', 1500);
     } catch (err) {
-      Utils.toastError(err.message || 'Failed to submit report. Please retry.');
+      let errMsg = err.message || 'Failed to submit report. Please retry.';
+      if (err.data && err.data.errors && err.data.errors.length > 0) {
+        errMsg = err.data.errors.map(e => e.message).join('\n');
+      }
+      Utils.toastError(errMsg);
     } finally {
       Utils.setButtonLoading(btn, false);
     }

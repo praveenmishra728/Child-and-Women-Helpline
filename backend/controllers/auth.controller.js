@@ -14,8 +14,8 @@ const ApiError = require('../utils/apiError');
  */
 const requestOtp = async (req, res, next) => {
   try {
-    const { email } = req.body;
-    await authService.initiateOtpFlow(email);
+    const { email, name } = req.body;
+    await authService.initiateOtpFlow(email, name);
     return ApiResponse.success(res, `Secure 6-digit OTP code sent to ${email}. Check spam folder if not received.`, { email });
   } catch (error) {
     next(error);

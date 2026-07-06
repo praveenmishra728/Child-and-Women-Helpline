@@ -98,6 +98,10 @@ const Validator = (() => {
 
   const schemas = {
     login: {
+      full_name: {
+        label: 'Full Name',
+        rules: [{ required: true }, { minLength: 2 }],
+      },
       email: {
         label: 'Email',
         rules: [{ required: true }, { email: true }],

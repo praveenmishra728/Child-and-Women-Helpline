@@ -14,7 +14,12 @@ const requestOtpSchema = Joi.object({
     .messages({
       'string.email': 'Please provide a valid email address.',
       'any.required': 'Email address is required.'
-    })
+    }),
+  name: Joi.string()
+    .trim()
+    .max(100)
+    .optional()
+    .allow('', null)
 });
 
 const verifyOtpSchema = Joi.object({

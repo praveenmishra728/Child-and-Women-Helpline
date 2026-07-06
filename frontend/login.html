@@ -40,6 +40,17 @@
 
       <form id="email-form" novalidate aria-label="Email login form">
         <div class="form-group">
+          <label class="form-label" for="full_name">
+            Full Name <span class="required" aria-label="required">*</span>
+          </label>
+          <div class="input-wrapper">
+            <i class="ph ph-user input-icon" aria-hidden="true"></i>
+            <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter your full name"
+              autocomplete="name" aria-required="true" maxlength="100" />
+          </div>
+        </div>
+
+        <div class="form-group mt-4">
           <label class="form-label" for="email">
             Email Address <span class="required" aria-label="required">*</span>
           </label>
@@ -164,8 +175,9 @@
         Utils.setButtonLoading(btn, true);
 
         try {
+          const name = document.getElementById('full_name').value.trim();
           currentEmail = document.getElementById('email').value.trim().toLowerCase();
-          await Auth.sendOtp(currentEmail);
+          await Auth.sendOtp(currentEmail, name);
 
           Utils.toastSuccess('OTP sent to your email.', 'Check Inbox');
           document.getElementById('otp-email-display').textContent = currentEmail;
@@ -272,7 +284,8 @@
       // ─── Resend OTP ────────────────────────────────────────────────
       document.getElementById('resend-btn').addEventListener('click', async () => {
         try {
-          await Auth.sendOtp(currentEmail);
+          const name = document.getElementById('full_name').value.trim();
+          await Auth.sendOtp(currentEmail, name);
           Utils.toastSuccess('New OTP sent!');
           document.querySelectorAll('.otp-input').forEach((i) => { i.value = ''; i.classList.remove('filled'); });
           document.getElementById('resend-btn').disabled = true;
@@ -291,6 +304,9 @@
         document.getElementById('email').value = currentEmail;
         document.getElementById('email').focus();
       });
+
+      // Attach live validation
+      Validator.attachLiveValidation(document.getElementById('email-form'), Validator.schemas.login);
     });
   </script>
 </body>

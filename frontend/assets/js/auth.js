@@ -77,8 +77,8 @@ const Auth = (() => {
   // ─── Auth API calls ───────────────────────────────────────────
 
   /** Step 1: Send OTP to email */
-  const sendOtp = async (email) => {
-    return Api.post('/auth/send-otp', { email }, false);
+  const sendOtp = async (email, name = '') => {
+    return Api.post('/auth/send-otp', { email, name }, false);
   };
 
   /** Step 2: Verify OTP and store tokens */

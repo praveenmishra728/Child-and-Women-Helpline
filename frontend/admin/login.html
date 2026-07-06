@@ -31,6 +31,13 @@
     <div id="admin-step-email">
       <form id="admin-email-form" novalidate>
         <div class="form-group">
+          <label class="form-label" for="admin-full-name">Full Name <span class="required">*</span></label>
+          <div class="input-wrapper">
+            <i class="ph ph-user input-icon"></i>
+            <input type="text" class="form-control" id="admin-full-name" name="full_name" placeholder="Enter your name" autocomplete="name" required />
+          </div>
+        </div>
+        <div class="form-group mt-4">
           <label class="form-label" for="admin-email">Admin Email <span class="required">*</span></label>
           <div class="input-wrapper">
             <i class="ph ph-envelope input-icon"></i>
@@ -89,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('admin-send-otp-btn');
     Utils.setButtonLoading(btn, true);
     try {
+      const name = document.getElementById('admin-full-name').value.trim();
       email = document.getElementById('admin-email').value.trim();
-      await Auth.sendOtp(email);
+      await Auth.sendOtp(email, name);
       document.getElementById('admin-email-display').textContent = email;
       Utils.hide(stepEmail); Utils.show(stepOtp);
       startTimer();
@@ -143,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (s <= 0) { clearInterval(timer); document.getElementById('admin-countdown').textContent = 'Expired'; }
     }, 1000);
   };
+
+  Validator.attachLiveValidation(document.getElementById('admin-email-form'), Validator.schemas.login);
 });
 </script>
 </body>

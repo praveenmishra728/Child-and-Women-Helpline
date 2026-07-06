@@ -150,9 +150,20 @@ const invalidateUserRefreshTokens = async (userId) => {
 /**
  * Fetch profiles matching the email, or create a new user profile on first login.
  * @param {string} email - User email address
+ * @param {string} [name] - User full name
  * @returns {Promise<object>} Profile record
  */
-const getOrCreateProfile = async (email) => {
+const getOrCreateProfile = async (email, name = null) => {
+  let finalName = name;
+  const emailLower = email.toLowerCase().trim();
+  if (emailLower === 'praveen051992@gmail.com') {
+    finalName = 'Admin1';
+  } else if (emailLower === 'praveenmishra728@gmail.com') {
+    finalName = 'Admin2';
+  } else if (emailLower === 'accofficeabn@gmail.com') {
+    finalName = 'Account';
+  }
+
   if (supabase) {
     const { data: existingProfile, error: fetchError } = await supabase
       .from('profiles')
@@ -161,6 +172,17 @@ const getOrCreateProfile = async (email) => {
       .maybeSingle();
 
     if (!fetchError && existingProfile) {
+      if (finalName && existingProfile.full_name !== finalName) {
+        const { data: updatedProfile, error: updateError } = await supabase
+          .from('profiles')
+          .update({ full_name: finalName })
+          .eq('id', existingProfile.id)
+          .select('*')
+          .single();
+        if (!updateError && updatedProfile) {
+          return updatedProfile;
+        }
+      }
       return existingProfile;
     }
 
@@ -172,7 +194,7 @@ const getOrCreateProfile = async (email) => {
       .from('profiles')
       .insert({
         email,
-        full_name: email.split('@')[0],
+        full_name: finalName || email.split('@')[0],
         role
       })
       .select('*')
@@ -190,11 +212,13 @@ const getOrCreateProfile = async (email) => {
       existingProfile = {
         id: `mock-uuid-${Date.now()}`,
         email,
-        full_name: email.split('@')[0],
+        full_name: finalName || email.split('@')[0],
         role: email.includes('admin') ? 'admin' : 'user',
         created_at: new Date().toISOString()
       };
       mockDb.profiles.push(existingProfile);
+    } else if (finalName) {
+      existingProfile.full_name = finalName;
     }
     return existingProfile;
   }
@@ -222,8 +246,9 @@ const getProfileById = async (id) => {
 /**
  * Generate and store OTP, then send via Resend
  * @param {string} email - User email address
+ * @param {string} [name] - User full name
  */
-const initiateOtpFlow = async (email) => {
+const initiateOtpFlow = async (email, name = null) => {
   // If in Mock Mode (no supabase), use static OTP '123456' for ease of local testing
   const otp = (!supabase) ? '123456' : generate6DigitOtp();
   const saltRounds = 10;
@@ -231,7 +256,7 @@ const initiateOtpFlow = async (email) => {
   const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes validity
 
   // 1. Manage user registration placeholder (Ensure profile exists)
-  await getOrCreateProfile(email);
+  await getOrCreateProfile(email, name);
 
   if (supabase) {
     // 2. Clear any active unverified records for this email

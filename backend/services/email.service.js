@@ -23,102 +23,84 @@ const sendOtpEmail = async (to, otp) => {
         <title>SurakshaAI Verification Code</title>
         <style>
           body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f7f9fc;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f5f7;
             margin: 0;
             padding: 0;
           }
-          .email-container {
-            max-width: 600px;
-            margin: 40px auto;
+          .container {
+            max-width: 540px;
+            margin: 30px auto;
             background-color: #ffffff;
-            border-radius: 12px;
+            border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eef2f6;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e4e8;
           }
-          .email-header {
-            background: linear-gradient(135deg, #d9383a 0%, #9a1f21 100%);
-            padding: 30px;
+          .header {
+            background-color: #1e3a8a;
+            padding: 24px;
             text-align: center;
           }
-          .email-header h1 {
+          .header h1 {
             color: #ffffff;
             margin: 0;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
-            letter-spacing: 0.5px;
           }
-          .email-body {
-            padding: 40px 30px;
-            color: #333333;
-            line-height: 1.6;
+          .body {
+            padding: 30px;
+            color: #24292e;
+            line-height: 1.5;
           }
-          .email-body p {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 16px;
+          .body p {
+            margin: 0 0 16px;
+            font-size: 15px;
           }
-          .otp-card {
-            background-color: #fcf1f1;
-            border: 1px dashed #d9383a;
-            border-radius: 8px;
-            padding: 20px;
+          .otp-container {
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
           }
           .otp-code {
             font-size: 32px;
             font-weight: 700;
-            color: #d9383a;
-            letter-spacing: 8px;
-            margin: 0;
-          }
-          .info-text {
-            font-size: 14px;
-            color: #666666;
-            background-color: #f8f9fa;
-            padding: 12px;
+            color: #1e3a8a;
+            letter-spacing: 6px;
+            background-color: #f1f5f9;
+            padding: 12px 24px;
+            display: inline-block;
             border-radius: 6px;
-            margin-bottom: 30px;
+            border: 1px solid #cbd5e1;
           }
-          .email-footer {
-            background-color: #f8f9fa;
-            padding: 20px 30px;
+          .footer {
+            background-color: #fafbfc;
+            padding: 16px 30px;
             text-align: center;
-            border-top: 1px solid #eef2f6;
+            border-top: 1px solid #e1e4e8;
           }
-          .email-footer p {
+          .footer p {
             margin: 0;
             font-size: 12px;
-            color: #999999;
+            color: #586069;
           }
         </style>
       </head>
       <body>
-        <div class="email-container">
-          <div class="email-header">
-            <!-- Project Logo Placeholder -->
-            <div style="font-size: 28px; margin-bottom: 10px;">🛡️</div>
-            <h1>SurakshaAI Portal</h1>
+        <div class="container">
+          <div class="header">
+            <h1>SurakshaAI Safety Portal</h1>
           </div>
-          <div class="email-body">
+          <div class="body">
             <p>Hello,</p>
-            <p>You requested a secure verification code to log in to the <strong>SurakshaAI Women & Child Safety Portal</strong>. Please use the 6-digit One-Time Password (OTP) below to authenticate your identity.</p>
-            
-            <div class="otp-card">
+            <p>Use the verification code below to complete your login request for the SurakshaAI Safety Portal.</p>
+            <div class="otp-container">
               <div class="otp-code">${otp}</div>
             </div>
-            
-            <div class="info-text">
-              ⚠️ <strong>This OTP is valid for exactly 5 minutes</strong> and can only be used once. For security reasons, do not share this code with anyone, including police personnel or administrators.
-            </div>
-            
-            <p>If you did not request this verification code, please ignore this email or contact support if you suspect unauthorized access.</p>
+            <p>This verification code is valid for 5 minutes and can only be used once.</p>
+            <p>If you did not request this code, you can safely ignore this email.</p>
           </div>
-          <div class="email-footer">
-            <p>This is an automated security system notification from SurakshaAI Portal.</p>
-            <p style="margin-top: 5px;">&copy; 2026 SurakshaAI Safety, Department of Police Training.</p>
+          <div class="footer">
+            <p>This is an automated notification from SurakshaAI Portal.</p>
           </div>
         </div>
       </body>
@@ -133,7 +115,7 @@ const sendOtpEmail = async (to, otp) => {
     const { data, error } = await resend.emails.send({
       from: config.resend.fromEmail,
       to: [to],
-      subject: `Your Secure OTP: ${otp} - SurakshaAI Portal`,
+      subject: `SurakshaAI Verification Code: ${otp}`,
       html: htmlContent
     });
 

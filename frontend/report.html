@@ -340,9 +340,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const imgInput   = document.getElementById('image-input');
     const docInput   = document.getElementById('doc-input');
     const audioInput = document.getElementById('audio-input');
-    [...(imgInput.files || [])].forEach((f) => fd.append('files', f));
-    [...(docInput.files || [])].forEach((f) => fd.append('files', f));
-    [...(audioInput.files || [])].forEach((f) => fd.append('files', f));
+    [...(imgInput.files || [])].forEach((f) => fd.append('image', f));
+    [...(docInput.files || [])].forEach((f) => fd.append('pdf', f));
+    [...(audioInput.files || [])].forEach((f) => fd.append('audio', f));
     return fd;
   };
 

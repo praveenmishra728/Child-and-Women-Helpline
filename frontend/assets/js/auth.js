@@ -31,10 +31,15 @@ const Auth = (() => {
   // ─── Route Guards ─────────────────────────────────────────────
 
   /** Call on every protected page. Redirects to login if not authenticated. */
-  const requireAuth = (redirectTo = '/login.html') => {
+  const requireAuth = (redirectTo = 'login.html') => {
     if (!isLoggedIn()) {
       sessionStorage.setItem('redirect_after_login', window.location.href);
-      window.location.href = redirectTo;
+      const path = window.location.pathname;
+      if (path.includes('/admin/')) {
+        window.location.href = '../login.html';
+      } else {
+        window.location.href = redirectTo;
+      }
       return false;
     }
     return true;
@@ -43,12 +48,22 @@ const Auth = (() => {
   /** Call on every admin-only page. */
   const requireAdmin = () => {
     if (!isLoggedIn()) {
-      window.location.href = 'admin/login.html';
+      const path = window.location.pathname;
+      if (path.includes('/admin/')) {
+        window.location.href = 'login.html';
+      } else {
+        window.location.href = 'admin/login.html';
+      }
       return false;
     }
     if (!isAdmin()) {
       Utils.toastError('You do not have permission to access this page.');
-      window.location.href = 'dashboard.html';
+      const path = window.location.pathname;
+      if (path.includes('/admin/')) {
+        window.location.href = '../dashboard.html';
+      } else {
+        window.location.href = 'dashboard.html';
+      }
       return false;
     }
     return true;

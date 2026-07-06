@@ -39,6 +39,7 @@
 
     <div class="admin-nav-label">Management</div>
     <a href="dashboard.html#users"     class="admin-link"><i class="ph ph-users"></i>User Management</a>
+    <a href="dashboard.html#contacts"  class="admin-link"><i class="ph ph-envelope"></i>Contact Messages</a>
     <a href="dashboard.html#notify"    class="admin-link"><i class="ph ph-bell"></i>Send Notification</a>
     <a href="dashboard.html#audit"     class="admin-link"><i class="ph ph-file-text"></i>Audit Logs</a>
 
@@ -152,6 +153,23 @@
         <div class="pagination" id="users-pagination" role="navigation" aria-label="Users pagination"></div>
       </section>
 
+      <!-- ── CONTACT MESSAGES ─────────────────────────────────── -->
+      <section id="contacts" class="chart-card mb-6" aria-labelledby="contacts-heading">
+        <div class="chart-header">
+          <h3 class="chart-title" id="contacts-heading"><i class="ph ph-envelope"></i> Contact Messages</h3>
+        </div>
+        <div class="table-wrapper">
+          <table aria-label="Contact Messages table">
+            <thead>
+              <tr><th>Name</th><th>Email</th><th>Subject</th><th>Message</th><th>Reply</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="contacts-body">
+              <tr><td colspan="6" style="text-align:center;padding:var(--space-10)"><div class="spinner spinner-sm" style="margin:0 auto"></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- ── AUDIT LOGS ───────────────────────────────────────── -->
       <section id="audit" class="chart-card mb-6" aria-labelledby="audit-heading">
         <div class="chart-header">
@@ -172,6 +190,50 @@
     </div><!-- /.admin-page-body -->
   </div><!-- /.admin-content -->
 </div><!-- /.admin-layout -->
+
+<!-- Reply Contact Modal -->
+<div class="modal-overlay" id="reply-modal" role="dialog" aria-modal="true" aria-labelledby="reply-modal-title">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="reply-modal-title">Reply to Contact Message</h3>
+      <button class="modal-close" onclick="Utils.closeModal('reply-modal')" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Message Details</label>
+        <div style="background:var(--color-gray-50);padding:var(--space-3);border-radius:var(--radius-lg);margin-bottom:var(--space-4)">
+          <div style="font-weight:600;font-size:var(--font-size-sm);color:var(--color-gray-800)" id="reply-sender-info"></div>
+          <div style="font-size:var(--font-size-xs);color:var(--color-text-muted);margin-bottom:var(--space-2)" id="reply-subject-info"></div>
+          <div style="font-size:var(--font-size-sm);white-space:pre-wrap;color:var(--color-gray-700)" id="reply-message-info"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reply-text">Your Reply</label>
+        <textarea class="form-control" id="reply-text" rows="4" placeholder="Type your response to the user…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Utils.closeModal('reply-modal')">Cancel</button>
+      <button class="btn btn-primary" id="reply-submit-btn">Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Report Details Modal -->
+<div class="modal-overlay" id="view-report-modal" role="dialog" aria-modal="true" aria-labelledby="view-report-modal-title">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <h3 class="modal-title" id="view-report-modal-title">Report Details</h3>
+      <button class="modal-close" onclick="Utils.closeModal('view-report-modal')" aria-label="Close">×</button>
+    </div>
+    <div class="modal-body" id="view-report-modal-body" style="max-height:70vh;overflow-y:auto">
+      Loading…
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="Utils.closeModal('view-report-modal')">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- Update Status Modal -->
 <div class="modal-overlay" id="status-modal" role="dialog" aria-modal="true" aria-labelledby="status-modal-title">
@@ -313,6 +375,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td><span class="badge ${r.priority === 'critical' ? 'badge-danger' : r.priority === 'high' ? 'badge-warning' : 'badge-gray'}">${Utils.capitalize(r.priority||'—')}</span></td>
             <td>${Utils.formatDate(r.created_at)}</td>
             <td style="display:flex;gap:4px">
+              <button class="btn btn-ghost btn-sm" onclick="viewReportDetails('${r.id}')" title="View Details"><i class="ph ph-eye"></i></button>
               <button class="btn btn-ghost btn-sm" onclick="openStatusModal('${r.id}')" title="Update Status"><i class="ph ph-pencil-simple"></i></button>
               <button class="btn btn-ghost btn-sm" style="color:var(--color-danger)" onclick="adminDeleteReport('${r.id}')" title="Delete"><i class="ph ph-trash"></i></button>
             </td>
@@ -325,6 +388,102 @@ document.addEventListener('DOMContentLoaded', async () => {
   let rDebounce;
   document.getElementById('report-search').addEventListener('input', () => { clearTimeout(rDebounce); rDebounce = setTimeout(() => loadReports(1), 400); });
   document.getElementById('report-filter-status').addEventListener('change', () => loadReports(1));
+
+  // View Report Details
+  window.viewReportDetails = async (id) => {
+    Utils.openModal('view-report-modal');
+    const body = document.getElementById('view-report-modal-body');
+    body.innerHTML = '<div class="flex-center" style="padding:var(--space-10)"><div class="spinner spinner-sm"></div></div>';
+    try {
+      const res = await Api.get(`/admin/reports/${id}`);
+      const r   = res.data?.report;
+      const attachments = res.data?.attachments || [];
+      if (!r) throw new Error('Report not found.');
+
+      // Format attachments list
+      let attachmentsHtml = '<p class="text-sm text-muted">No attachments uploaded.</p>';
+      if (attachments.length > 0) {
+        attachmentsHtml = `<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">` +
+          attachments.map(att => {
+            const sizeKb = (att.file_size / 1024).toFixed(1);
+            if (att.file_type === 'image') {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:0.75rem;font-weight:600;color:var(--color-gray-700)">Image Attachment (${sizeKb} KB)</div>
+                  <img src="${att.file_path}" alt="Incident Attachment" style="max-width:100%;max-height:300px;object-fit:contain;border-radius:var(--radius-md)">
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-xs" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> Open Original</a>
+                </div>`;
+            } else if (att.file_type === 'audio') {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:0.75rem;font-weight:600;color:var(--color-gray-700)">Audio Recording (${sizeKb} KB)</div>
+                  <audio controls src="${att.file_path}" style="width:100%"></audio>
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-xs" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> Download Audio</a>
+                </div>`;
+            } else {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <i class="ph ph-file-pdf" style="font-size:1.8rem;color:var(--color-danger)"></i>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;color:var(--color-gray-800)">PDF Document</div>
+                      <div style="font-size:0.75rem;color:var(--color-text-muted)">${sizeKb} KB</div>
+                    </div>
+                  </div>
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-sm" style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> View / Download</a>
+                </div>`;
+            }
+          }).join('') + `</div>`;
+      }
+
+      body.innerHTML = `
+        <div class="flex-between mb-4" style="border-bottom:1px solid var(--color-gray-100);padding-bottom:12px">
+          <span class="report-case-id" style="font-size:1.2rem;font-weight:700">${Utils.escapeHtml(r.case_id||'DRAFT')}</span>
+          ${Utils.statusChip(r.status)}
+        </div>
+        
+        <div class="grid-2 gap-4 mb-4" style="background:var(--color-gray-50);padding:16px;border-radius:var(--radius-lg)">
+          <div><div class="text-xs text-muted">Incident Type</div><div class="font-semibold">${Utils.escapeHtml(r.incident_type||'—')}</div></div>
+          <div><div class="text-xs text-muted">Victim Type</div><div class="font-semibold">${Utils.escapeHtml(r.victim_type||'—')}</div></div>
+          <div><div class="text-xs text-muted">Incident Date</div><div class="font-semibold">${Utils.formatDate(r.incident_date)}</div></div>
+          <div><div class="text-xs text-muted">Incident Time</div><div class="font-semibold">${r.incident_time || '—'}</div></div>
+          <div><div class="text-xs text-muted">Priority</div><div class="font-semibold">${Utils.capitalize(r.priority||'—')}</div></div>
+          <div><div class="text-xs text-muted">AI Risk Assessment</div><div class="font-semibold">${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : '—'}</div></div>
+        </div>
+
+        <div class="mb-4">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--color-gray-600);margin-bottom:6px">Reporter Details</div>
+          <div style="border:1px solid var(--color-gray-200);padding:12px;border-radius:var(--radius-lg);background:#fff">
+            ${r.is_anonymous 
+              ? `<div style="font-weight:700;color:var(--color-danger);display:flex;align-items:center;gap:6px"><i class="ph-bold ph-eye-slash"></i> Anonymous (Identity Protected)</div>`
+              : `<div><strong>Name:</strong> ${Utils.escapeHtml(r.reporter?.full_name || '—')}</div>
+                 <div style="margin-top:4px"><strong>Email:</strong> ${Utils.escapeHtml(r.reporter?.email || '—')}</div>`
+            }
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--color-gray-600);margin-bottom:6px">Description</div>
+          <p class="text-sm" style="background:#fff;border:1px solid var(--color-gray-200);padding:16px;border-radius:var(--radius-lg);white-space:pre-wrap;line-height:1.6;color:var(--color-gray-800)">${Utils.escapeHtml(r.description||'—')}</p>
+        </div>
+
+        <div class="mb-4">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--color-gray-600);margin-bottom:6px">Location</div>
+          <div class="font-semibold">📍 ${Utils.escapeHtml(r.location_name || 'Not specified')}</div>
+          ${(r.latitude && r.longitude) ? `<div style="font-size:0.75rem;color:var(--color-text-muted);margin-top:4px">Coordinates: ${r.latitude}, ${r.longitude}</div>` : ''}
+        </div>
+
+        <div class="mb-4">
+          <div style="font-size:0.8rem;font-weight:700;color:var(--color-gray-600);margin-bottom:6px">Attachments (Photo, Audio, PDF)</div>
+          ${attachmentsHtml}
+        </div>
+
+        <div style="border-top:1px solid var(--color-gray-100);padding-top:12px;margin-top:16px;text-align:right" class="text-xs text-muted">Submitted At: ${Utils.formatDateTime(r.created_at)}</div>
+      `;
+    } catch (err) {
+      body.innerHTML = `<p class="text-center text-muted" style="color:var(--color-danger)">Failed to load report details. ${Utils.escapeHtml(err.message)}</p>`;
+    }
+  };
 
   // Status update modal
   window.openStatusModal = (id) => {
@@ -412,6 +571,73 @@ document.addEventListener('DOMContentLoaded', async () => {
           <td>${Utils.timeAgo(l.created_at)}</td>
         </tr>`).join('');
   } catch { /* audit may be empty */ }
+
+  // ─── Contact Messages Table ───────────────────────────────────
+  let activeContactId = null;
+  const loadContacts = async () => {
+    try {
+      const res = await Api.get('/admin/contacts?limit=20');
+      const list = res.data?.list || [];
+      const tbody = document.getElementById('contacts-body');
+      tbody.innerHTML = !list.length
+        ? `<tr><td colspan="6" style="text-align:center;padding:var(--space-8);color:var(--color-text-muted)">No contact messages found.</td></tr>`
+        : list.map((m) => `
+          <tr>
+            <td><strong>${Utils.escapeHtml(m.name)}</strong></td>
+            <td>${Utils.escapeHtml(m.email)}</td>
+            <td><span class="badge badge-gray">${Utils.escapeHtml(m.subject)}</span></td>
+            <td><div style="max-width:250px;font-size:0.85rem;text-overflow:ellipsis;overflow:hidden;white-space:nowrap" title="${Utils.escapeHtml(m.message)}">${Utils.escapeHtml(m.message)}</div></td>
+            <td>${m.reply ? `<span style="color:var(--color-success)">✓ Replied</span>` : `<span style="color:var(--color-danger)">Pending</span>`}</td>
+            <td>
+              <button class="btn btn-ghost btn-sm" onclick="openReplyModal('${m.id}')" title="Reply Message">
+                <i class="ph ph-arrow-bend-up-left"></i> Reply
+              </button>
+            </td>
+          </tr>`).join('');
+    } catch {
+      document.getElementById('contacts-body').innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--color-danger)">Failed to load contact messages.</td></tr>`;
+    }
+  };
+
+  await loadContacts();
+
+  window.openReplyModal = async (id) => {
+    activeContactId = id;
+    document.getElementById('reply-text').value = '';
+    Utils.openModal('reply-modal');
+    
+    try {
+      const res = await Api.get('/admin/contacts?limit=100');
+      const msg = res.data?.list?.find(m => m.id === id);
+      if (msg) {
+        document.getElementById('reply-sender-info').textContent = `From: ${msg.name} (${msg.email})`;
+        document.getElementById('reply-subject-info').textContent = `Subject: ${msg.subject}`;
+        document.getElementById('reply-message-info').textContent = msg.message;
+        if (msg.reply) {
+          document.getElementById('reply-text').value = msg.reply;
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  document.getElementById('reply-submit-btn').addEventListener('click', async () => {
+    if (!activeContactId) return;
+    const reply = document.getElementById('reply-text').value.trim();
+    if (!reply) {
+      Utils.toastError('Please type a reply.');
+      return;
+    }
+    try {
+      await Api.post(`/admin/contacts/${activeContactId}/reply`, { reply });
+      Utils.closeModal('reply-modal');
+      Utils.toastSuccess('Reply updated successfully.');
+      loadContacts();
+    } catch (err) {
+      Utils.toastError(err.message || 'Failed to send reply.');
+    }
+  });
 });
 </script>
 </body>

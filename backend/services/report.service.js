@@ -25,12 +25,36 @@ const uploadToSupabaseStorage = async (file) => {
   }
 
   // Upload file buffer
-  const { data, error } = await supabase.storage
+  let { data, error } = await supabase.storage
     .from(bucketName)
     .upload(`incidents/${fileName}`, file.buffer, {
       contentType: file.mimetype,
       upsert: true
     });
+
+  if (error && (error.message.includes('not found') || error.message.includes('Bucket'))) {
+    console.log(`[Storage] Bucket '${bucketName}' not found. Attempting to create it dynamically...`);
+    try {
+      const { error: createError } = await supabase.storage.createBucket(bucketName, {
+        public: true
+      });
+      if (!createError) {
+        console.log(`[Storage] Bucket '${bucketName}' created successfully. Retrying file upload...`);
+        const retryResult = await supabase.storage
+          .from(bucketName)
+          .upload(`incidents/${fileName}`, file.buffer, {
+            contentType: file.mimetype,
+            upsert: true
+          });
+        data = retryResult.data;
+        error = retryResult.error;
+      } else {
+        console.error(`[Storage] Failed to create bucket dynamically:`, createError.message);
+      }
+    } catch (err) {
+      console.error(`[Storage] Error during dynamic bucket creation:`, err.message);
+    }
+  }
 
   if (error) {
     throw new Error(`File upload failed: ${error.message}`);

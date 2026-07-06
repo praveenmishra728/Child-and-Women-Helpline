@@ -138,7 +138,14 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       // Redirect if already logged in
-      Auth.redirectIfLoggedIn('dashboard.html');
+      if (Auth.isLoggedIn()) {
+        const user = Auth.getUser();
+        if (user && (user.role === 'admin' || user.role === 'super_admin')) {
+          window.location.href = 'admin/dashboard.html';
+        } else {
+          window.location.href = 'dashboard.html';
+        }
+      }
 
       // ─── State ─────────────────────────────────────────────────────
       let currentEmail = '';
@@ -191,8 +198,15 @@
           const user = await Auth.verifyOtp(currentEmail, otp);
           Utils.toastSuccess(`Welcome, ${user.full_name || 'User'}!`, 'Login Successful');
           clearInterval(otpTimer);
-          const redirect = sessionStorage.getItem('redirect_after_login') || 'dashboard.html';
+          let redirect = sessionStorage.getItem('redirect_after_login');
           sessionStorage.removeItem('redirect_after_login');
+          if (!redirect) {
+            if (user && (user.role === 'admin' || user.role === 'super_admin')) {
+              redirect = 'admin/dashboard.html';
+            } else {
+              redirect = 'dashboard.html';
+            }
+          }
           setTimeout(() => { window.location.href = redirect; }, 800);
         } catch (err) {
           Utils.toastError(err.message || 'Invalid OTP. Please try again.');

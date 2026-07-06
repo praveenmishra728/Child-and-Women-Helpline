@@ -210,7 +210,7 @@ const getAdminReportDetail = async (reportId) => {
   }
 
   const [reportRes, attachRes, aiRes] = await Promise.all([
-    supabase.from('reports').select('*').eq('id', reportId).maybeSingle(),
+    supabase.from('reports').select('*, reporter:reporter_id(email, full_name)').eq('id', reportId).maybeSingle(),
     supabase.from('report_attachments').select('*').eq('report_id', reportId),
     // Get AI conversations tied to any session for this report (if linked in future)
     // For now we return empty unless we have a direct link

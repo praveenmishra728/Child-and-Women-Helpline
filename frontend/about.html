@@ -62,11 +62,11 @@
               <div class="text-sm text-muted">AI Availability</div>
             </div>
             <div class="card" style="text-align:center;border-top:3px solid var(--color-success)">
-              <div style="font-size:2.5rem;font-weight:900;color:var(--color-success)">45K+</div>
+              <div style="font-size:2.5rem;font-weight:900;color:var(--color-success)" id="about-users">45K+</div>
               <div class="text-sm text-muted">Registered Users</div>
             </div>
             <div class="card" style="text-align:center;border-top:3px solid var(--color-warning)">
-              <div style="font-size:2.5rem;font-weight:900;color:var(--color-warning)">12K+</div>
+              <div style="font-size:2.5rem;font-weight:900;color:var(--color-warning)" id="about-resolved">12K+</div>
               <div class="text-sm text-muted">Reports Resolved</div>
             </div>
           </div>
@@ -134,5 +134,25 @@
     </div>
   </div>
 </footer>
+<script src="assets/js/config.js"></script>
+<script src="assets/js/api.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await Api.get('/public-stats', false);
+    const stats = res.data || {};
+    const usersEl = document.getElementById('about-users');
+    const resolvedEl = document.getElementById('about-resolved');
+    if (usersEl && stats.users !== undefined) {
+      usersEl.textContent = stats.users.toLocaleString();
+    }
+    if (resolvedEl && stats.resolved !== undefined) {
+      resolvedEl.textContent = stats.resolved.toLocaleString();
+    }
+  } catch (err) {
+    console.error('Failed to load public stats on about page:', err);
+  }
+});
+</script>
 </body>
 </html>

@@ -455,19 +455,41 @@
       // FAQ
       Utils.initFaqAccordion();
 
-      // Animate counters when visible
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            document.querySelectorAll('[data-count]').forEach((el) => {
-              Utils.animateCounter(el, parseInt(el.dataset.count));
-            });
-            observer.disconnect();
-          }
-        });
-      }, { threshold: 0.3 });
-      const statsBar = document.querySelector('.stats-bar');
-      if (statsBar) observer.observe(statsBar);
+      // Fetch and update public statistics
+      const loadStats = async () => {
+        try {
+          const res = await Api.get('/public-stats', false);
+          const stats = res.data || {};
+          
+          const repEl = document.getElementById('stat-reports');
+          const resEl = document.getElementById('stat-resolved');
+          const usrEl = document.getElementById('stat-users');
+          const staEl = document.getElementById('stat-states');
+
+          if (repEl) repEl.dataset.count = stats.reports ?? 12500;
+          if (resEl) resEl.dataset.count = stats.resolved ?? 9800;
+          if (usrEl) usrEl.dataset.count = stats.users ?? 45000;
+          if (staEl) staEl.dataset.count = stats.states ?? 28;
+        } catch (err) {
+          console.error('Failed to fetch public stats:', err);
+        }
+
+        // Animate counters when visible
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              document.querySelectorAll('[data-count]').forEach((el) => {
+                Utils.animateCounter(el, parseInt(el.dataset.count));
+              });
+              observer.disconnect();
+            }
+          });
+        }, { threshold: 0.3 });
+        const statsBar = document.querySelector('.stats-bar');
+        if (statsBar) observer.observe(statsBar);
+      };
+
+      loadStats();
 
       // Load unread notification count
       if (Auth.isLoggedIn()) {

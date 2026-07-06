@@ -61,6 +61,12 @@ app.get('/api/v1/health', (req, res) => {
 });
 
 // 8. Register Application Routers under API Versioning /api/v1
+const contactController = require('./controllers/contact.controller');
+const reportController = require('./controllers/report.controller');
+
+app.post('/api/v1/contacts', contactController.submitContactMessage);
+app.get('/api/v1/public-stats', reportController.getPublicStats);
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/ai', aiRoutes);

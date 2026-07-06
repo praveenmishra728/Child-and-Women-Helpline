@@ -208,6 +208,47 @@ const uploadEvidenceOnly = async (req, res, next) => {
   }
 };
 
+const getPublicStats = async (req, res, next) => {
+  try {
+    let reportsCount = 0;
+    let resolvedCount = 0;
+    let usersCount = 0;
+
+    if (supabase) {
+      const { count: repCount } = await supabase
+        .from('reports')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_draft', false);
+      reportsCount = repCount || 0;
+
+      const { count: resCount } = await supabase
+        .from('reports')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'resolved');
+      resolvedCount = resCount || 0;
+
+      const { count: uCount } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .eq('role', 'user');
+      usersCount = uCount || 0;
+    } else {
+      reportsCount = 128;
+      resolvedCount = 45;
+      usersCount = 92;
+    }
+
+    return ApiResponse.success(res, 'Public statistics retrieved.', {
+      reports: reportsCount,
+      resolved: resolvedCount,
+      users: usersCount,
+      states: 28
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createReport,
   getUserReports,
@@ -216,5 +257,6 @@ module.exports = {
   deleteReport,
   searchReports,
   getTimeline,
-  uploadEvidenceOnly
+  uploadEvidenceOnly,
+  getPublicStats
 };

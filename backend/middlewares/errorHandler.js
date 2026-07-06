@@ -12,7 +12,7 @@ const errorHandler = (err, req, res, next) => {
 
   // If the error is not an instance of ApiError, cast it
   if (!(error instanceof ApiError)) {
-    const statusCode = error.statusCode || (error.name === 'ValidationError' ? 400 : 500);
+    const statusCode = error.statusCode || (error.name === 'ValidationError' || error.name === 'MulterError' ? 400 : 500);
     const message = error.message || 'Internal Server Error';
     error = new ApiError(statusCode, message, false, err.stack);
   }

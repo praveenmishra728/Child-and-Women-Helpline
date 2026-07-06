@@ -115,5 +115,11 @@ router.get(
   adminController.getAuditLogs
 );
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTACT MESSAGES (Task 3 & 5)
+// ─────────────────────────────────────────────────────────────────────────────
+const contactController = require('../controllers/contact.controller');
+router.get('/contacts', contactController.listContactMessages);
+router.post('/contacts/:id/reply', contactController.replyContactMessage);
 
 module.exports = router;

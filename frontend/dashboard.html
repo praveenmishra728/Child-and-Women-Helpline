@@ -218,13 +218,17 @@
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   if (!Auth.requireAuth()) return;
+  const user = Auth.getUser();
+  if (user && (user.role === 'admin' || user.role === 'super_admin')) {
+    window.location.href = 'admin/dashboard.html';
+    return;
+  }
 
   Auth.populateNavUser();
   Utils.initDropdowns();
   Utils.initSidebar();
 
   // Populate welcome name
-  const user = Auth.getUser();
   const wName = document.getElementById('welcome-name');
   if (wName) wName.textContent = user?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'User';
 

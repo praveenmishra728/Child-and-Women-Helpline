@@ -252,25 +252,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const res = await Api.get(`/reports/${id}`);
       const r   = res.data?.report;
+      const attachments = res.data?.attachments || [];
       if (!r) throw new Error('Report not found.');
+
+      // Format attachments list
+      let attachmentsHtml = '<p class="text-sm text-muted">No attachments uploaded.</p>';
+      if (attachments.length > 0) {
+        attachmentsHtml = `<div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">` +
+          attachments.map(att => {
+            const sizeKb = (att.file_size / 1024).toFixed(1);
+            if (att.file_type === 'image') {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:0.75rem;font-weight:600;color:var(--color-gray-700)">Image Attachment (${sizeKb} KB)</div>
+                  <img src="${att.file_path}" alt="Incident Attachment" style="max-width:100%;max-height:280px;object-fit:contain;border-radius:var(--radius-md)">
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-xs" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> Open Original</a>
+                </div>`;
+            } else if (att.file_type === 'audio') {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:0.75rem;font-weight:600;color:var(--color-gray-700)">Audio Recording (${sizeKb} KB)</div>
+                  <audio controls src="${att.file_path}" style="width:100%"></audio>
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-xs" style="align-self:flex-start;display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> Download Audio</a>
+                </div>`;
+            } else {
+              return `
+                <div style="border:1px solid var(--color-gray-200);border-radius:var(--radius-lg);padding:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <i class="ph ph-file-pdf" style="font-size:1.8rem;color:var(--color-danger)"></i>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;color:var(--color-gray-800)">PDF Document</div>
+                      <div style="font-size:0.75rem;color:var(--color-text-muted)">${sizeKb} KB</div>
+                    </div>
+                  </div>
+                  <a href="${att.file_path}" target="_blank" class="btn btn-ghost btn-sm" style="display:inline-flex;align-items:center;gap:4px"><i class="ph ph-download"></i> View / Download</a>
+                </div>`;
+            }
+          }).join('') + `</div>`;
+      }
+
       body.innerHTML = `
-        <div class="flex-between mb-4">
-          <span class="report-case-id" style="font-size:1rem">${Utils.escapeHtml(r.case_id||'DRAFT')}</span>
+        <div class="flex-between mb-4" style="border-bottom:1px solid var(--color-gray-100);padding-bottom:12px">
+          <span class="report-case-id" style="font-size:1.1rem;font-weight:700">${Utils.escapeHtml(r.case_id||'DRAFT')}</span>
           ${Utils.statusChip(r.status)}
         </div>
-        <div class="grid-2 gap-4 mb-4">
-          <div><div class="text-xs text-muted">Incident Type</div><div class="font-semibold">${Utils.escapeHtml(r.incident_type||'—')}</div></div>
-          <div><div class="text-xs text-muted">Victim Type</div><div class="font-semibold">${Utils.escapeHtml(r.victim_type||'—')}</div></div>
-          <div><div class="text-xs text-muted">Incident Date</div><div class="font-semibold">${Utils.formatDate(r.incident_date)}</div></div>
-          <div><div class="text-xs text-muted">Priority</div><div class="font-semibold">${Utils.capitalize(r.priority||'—')}</div></div>
+        <div class="grid-2 gap-4 mb-4" style="background:var(--color-gray-50);padding:16px;border-radius:var(--radius-lg)">
+          <div><div class="text-xs text-muted font-semibold">Incident Type</div><div class="font-semibold">${Utils.escapeHtml(r.incident_type||'—')}</div></div>
+          <div><div class="text-xs text-muted font-semibold">Victim Type</div><div class="font-semibold">${Utils.escapeHtml(r.victim_type||'—')}</div></div>
+          <div><div class="text-xs text-muted font-semibold">Incident Date</div><div class="font-semibold">${Utils.formatDate(r.incident_date)}</div></div>
+          <div><div class="text-xs text-muted font-semibold">Incident Time</div><div class="font-semibold">${r.incident_time || '—'}</div></div>
+          <div><div class="text-xs text-muted font-semibold">Priority</div><div class="font-semibold">${Utils.capitalize(r.priority||'—')}</div></div>
+          <div><div class="text-xs text-muted font-semibold">AI Risk Assessment</div><div class="font-semibold">${r.ai_risk_level ? Utils.riskBadge(r.ai_risk_level) : '—'}</div></div>
         </div>
-        <div class="mb-4"><div class="text-xs text-muted mb-1">Description</div>
-        <p class="text-sm" style="background:var(--color-gray-50);padding:var(--space-4);border-radius:var(--radius-lg)">${Utils.escapeHtml(r.description||'—')}</p></div>
-        ${r.location_name ? `<div><div class="text-xs text-muted">Location</div><div class="font-semibold">📍 ${Utils.escapeHtml(r.location_name)}</div></div>` : ''}
-        ${r.ai_risk_level ? `<div class="mt-4">AI Risk Assessment: ${Utils.riskBadge(r.ai_risk_level)}</div>` : ''}
-        <div class="mt-4 text-xs text-muted">Submitted: ${Utils.formatDateTime(r.created_at)}</div>`;
+        <div class="mb-4">
+          <div class="text-xs text-muted mb-1 font-semibold">Description</div>
+          <p class="text-sm" style="background:#fff;border:1px solid var(--color-gray-200);padding:16px;border-radius:var(--radius-lg);white-space:pre-wrap;line-height:1.6;color:var(--color-gray-800)">${Utils.escapeHtml(r.description||'—')}</p>
+        </div>
+        <div class="mb-4">
+          <div class="text-xs text-muted mb-1 font-semibold">Location</div>
+          <div class="font-semibold">📍 ${Utils.escapeHtml(r.location_name || 'Not specified')}</div>
+        </div>
+        <div class="mb-4">
+          <div class="text-xs text-muted mb-1 font-semibold">Attachments (Photo, Audio, PDF)</div>
+          ${attachmentsHtml}
+        </div>
+        <div style="border-top:1px solid var(--color-gray-100);padding-top:12px;margin-top:16px;text-align:right" class="text-xs text-muted">Submitted At: ${Utils.formatDateTime(r.created_at)}</div>`;
     } catch (err) {
-      body.innerHTML = `<p class="text-center text-muted">Failed to load report details.</p>`;
+      body.innerHTML = `<p class="text-center text-muted" style="color:var(--color-danger)">Failed to load report details. ${Utils.escapeHtml(err.message)}</p>`;
     }
   };
 

@@ -154,15 +154,26 @@ const invalidateUserRefreshTokens = async (userId) => {
  * @returns {Promise<object>} Profile record
  */
 const getOrCreateProfile = async (email, name = null) => {
-  let finalName = name;
   const emailLower = email.toLowerCase().trim();
+  const expectedName = name ? name.trim() : null;
+
+  // Enforce name for the 3 predefined emails
+  let predefinedName = null;
   if (emailLower === 'praveen051992@gmail.com') {
-    finalName = 'Admin1';
+    predefinedName = 'Admin1';
   } else if (emailLower === 'praveenmishra728@gmail.com') {
-    finalName = 'Admin2';
+    predefinedName = 'Admin2';
   } else if (emailLower === 'accofficeabn@gmail.com') {
-    finalName = 'Account';
+    predefinedName = 'Account';
   }
+
+  // If it's a predefined email and name is provided, validate it matches the predefined name
+  if (predefinedName && expectedName && expectedName.toLowerCase() !== predefinedName.toLowerCase()) {
+    throw new Error(`Entered name does not match the registered name for this email.`);
+  }
+
+  // If predefined email, we will use the predefined name in the DB
+  const finalName = predefinedName || expectedName;
 
   if (supabase) {
     const { data: existingProfile, error: fetchError } = await supabase
@@ -172,16 +183,12 @@ const getOrCreateProfile = async (email, name = null) => {
       .maybeSingle();
 
     if (!fetchError && existingProfile) {
-      if (finalName && existingProfile.full_name !== finalName) {
-        const { data: updatedProfile, error: updateError } = await supabase
-          .from('profiles')
-          .update({ full_name: finalName })
-          .eq('id', existingProfile.id)
-          .select('*')
-          .single();
-        if (!updateError && updatedProfile) {
-          return updatedProfile;
-        }
+      // Validate entered name matches the database name
+      const dbName = (existingProfile.full_name || '').toLowerCase().trim();
+      const inputName = (expectedName || '').toLowerCase().trim();
+      
+      if (inputName && dbName && dbName !== inputName) {
+        throw new Error('Entered name does not match the registered name for this email.');
       }
       return existingProfile;
     }
@@ -208,19 +215,24 @@ const getOrCreateProfile = async (email, name = null) => {
   } else {
     // Mock Mode
     let existingProfile = mockDb.profiles.find(x => x.email === email);
-    if (!existingProfile) {
-      existingProfile = {
-        id: `mock-uuid-${Date.now()}`,
-        email,
-        full_name: finalName || email.split('@')[0],
-        role: email.includes('admin') ? 'admin' : 'user',
-        created_at: new Date().toISOString()
-      };
-      mockDb.profiles.push(existingProfile);
-    } else if (finalName) {
-      existingProfile.full_name = finalName;
+    if (existingProfile) {
+      const dbName = (existingProfile.full_name || '').toLowerCase().trim();
+      const inputName = (expectedName || '').toLowerCase().trim();
+      if (inputName && dbName && dbName !== inputName) {
+        throw new Error('Entered name does not match the registered name for this email.');
+      }
+      return existingProfile;
     }
-    return existingProfile;
+
+    const newProfile = {
+      id: `mock-uuid-${Date.now()}`,
+      email,
+      full_name: finalName || email.split('@')[0],
+      role: email.includes('admin') ? 'admin' : 'user',
+      created_at: new Date().toISOString()
+    };
+    mockDb.profiles.push(newProfile);
+    return newProfile;
   }
 };
 
